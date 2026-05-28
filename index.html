@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shooting Trainer">
+<meta name="theme-color" content="#0f1117">
+<link rel="manifest" id="pwa-manifest">
+<title>Olympic Shooting Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#22263a;
+  --border:#2d3148;--border2:#3d4260;
+  --text:#e8eaf0;--text2:#8b90a8;--text3:#555a75;
+  --green:#1dce8e;--blue:#4b9fff;--amber:#f5a623;--red:#f05353;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:680px;margin:0 auto;padding:1rem}
+h1{font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+h1 span{color:var(--green)}
+.tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--bg2);border-radius:var(--radius);padding:4px;border:1px solid var(--border)}
+.tab{flex:1;padding:8px;border:none;background:none;color:var(--text2);font-size:13px;cursor:pointer;border-radius:var(--radius-sm);font-family:inherit;transition:all .15s;font-weight:500}
+.tab.active{background:var(--bg3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.section{display:none}.section.active{display:block}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.config-label{font-size:11px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.config-val{font-size:24px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-bottom:10px;color:var(--text)}
+.stepper{display:flex;gap:6px;align-items:center}
+.step-btn{width:30px;height:30px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text);transition:background .1s}
+.step-btn:hover{background:var(--border2)}
+.step-display{min-width:44px;text-align:center;font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.exercises-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.exercises-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ex-item{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
+.ex-item.active{background:rgba(29,206,142,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(29,206,142,.3)}
+
+
+.timer-display{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-bottom:10px;position:relative;overflow:hidden}
+.timer-glow{position:absolute;inset:0;opacity:0;border-radius:var(--radius);transition:opacity .5s;pointer-events:none}
+.timer-glow.work{background:radial-gradient(ellipse at center,rgba(29,206,142,.08) 0%,transparent 70%);opacity:1}
+.timer-glow.rest{background:radial-gradient(ellipse at center,rgba(75,159,255,.08) 0%,transparent 70%);opacity:1}
+.timer-glow.prep{background:radial-gradient(ellipse at center,rgba(245,166,35,.08) 0%,transparent 70%);opacity:1}
+.phase-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px;border:1px solid}
+.phase-badge.work{background:rgba(29,206,142,.15);color:var(--green);border-color:rgba(29,206,142,.3)}
+.phase-badge.rest{background:rgba(75,159,255,.15);color:var(--blue);border-color:rgba(75,159,255,.3)}
+.phase-badge.prep{background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.phase-badge.idle{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.phase-badge.done{background:rgba(29,206,142,.2);color:var(--green);border-color:rgba(29,206,142,.4)}
+.time-big{font-size:80px;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:8px;transition:color .3s;color:var(--text)}
+.time-big.work{color:var(--green)}
+.time-big.rest{color:var(--blue)}
+.time-big.prep{color:var(--amber)}
+.time-big.halfpulse{animation:halfpulse .6s ease-out}
+@keyframes halfpulse{0%{transform:scale(1.15);opacity:.6}100%{transform:scale(1);opacity:1}}
+.round-info{font-size:13px;color:var(--text2);margin-bottom:14px}
+.progress-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .9s linear,background .3s}
+.progress-fill.work{background:var(--green)}
+.progress-fill.rest{background:var(--blue)}
+.progress-fill.prep{background:var(--amber)}
+.controls{display:flex;gap:8px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.btn{padding:9px 20px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit;font-weight:500}
+.btn:hover{background:var(--bg3)}
+.btn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:600}
+.btn.primary:hover{background:#15a870}
+.btn.danger{background:rgba(240,83,83,.15);color:var(--red);border-color:rgba(240,83,83,.3)}
+.btn.danger:hover{background:rgba(240,83,83,.25)}
+/* AUDIO MODE TOGGLE */
+.audio-toggle{display:flex;gap:6px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px}
+.audio-toggle label{font-size:13px;color:var(--text2);margin-right:4px;font-weight:500}
+.toggle-group{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
+.tgl-btn{padding:5px 12px;border:none;border-radius:6px;background:none;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s}
+.tgl-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+/* FORMS */
+.form-row{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+input[type=text],input[type=date],input[type=number],select,textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .15s}
+input[type=text],input[type=date],select,textarea{width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+textarea{resize:vertical;min-height:60px}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .15s;font-weight:500}
+.chip.active{background:rgba(29,206,142,.15);color:var(--green);border-color:rgba(29,206,142,.4)}
+.modal-events{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.event-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;transition:all .15s}
+.event-card:hover{border-color:var(--border2)}
+.event-card.selected{border-color:var(--green);background:rgba(29,206,142,.07)}
+.event-card .ev-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.event-card .ev-detail{color:var(--text2);font-size:11px}
+.shot-grid{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.series-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
+.series-lbl{font-size:11px;color:var(--text2);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.shots-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.shot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.shot-num{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.shot-input{width:52px;height:40px;text-align:center;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text);font-size:14px;font-family:'JetBrains Mono',monospace;outline:none;transition:border .15s;-moz-appearance:textfield}
+.shot-input::-webkit-outer-spin-button,.shot-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.shot-input:focus{border-color:var(--green)}
+.shot-input.inner10{border-color:var(--green);background:rgba(29,206,142,.12);color:var(--green);font-weight:600}
+.shot-input.invalid{border-color:var(--red);background:rgba(240,83,83,.08)}
+.total-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+.total-score{font-size:36px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green)}
+.inner10-hint{font-size:11px;color:var(--green);margin-top:6px;padding:6px 10px;background:rgba(29,206,142,.08);border-radius:6px;border:1px solid rgba(29,206,142,.2)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-num{font-size:26px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green)}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.records-list{display:flex;flex-direction:column;gap:8px}
+.record-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.record-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.record-event{font-size:14px;font-weight:600;color:var(--text)}
+.record-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.record-score{font-size:28px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green);text-align:right}
+.record-pct{font-size:11px;color:var(--text2);text-align:right}
+.badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge.comp{background:rgba(75,159,255,.15);color:var(--blue);border:1px solid rgba(75,159,255,.3)}
+.badge.train{background:rgba(29,206,142,.12);color:var(--green);border:1px solid rgba(29,206,142,.25)}
+.prog-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:10px}
+.prog-fill{height:100%;border-radius:2px;background:var(--green)}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;font-size:16px}
+.del-btn:hover{color:var(--red);background:rgba(240,83,83,.1)}
+.empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:14px}
+.section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;margin-top:1rem;text-transform:uppercase;letter-spacing:.04em}
+/* HALF-TIME flash */
+.halftime-flash{position:absolute;inset:0;background:rgba(245,166,35,.12);border-radius:var(--radius);pointer-events:none;animation:flashfade .8s ease-out forwards}
+@keyframes flashfade{0%{opacity:1}100%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🎯 Olympic <span>Shooting Trainer</span></h1>
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('timer')">⏱ Cronómetro</button>
+    <button class="tab" onclick="switchTab('log')">📋 Registrar</button>
+    <button class="tab" onclick="switchTab('history')">📊 Historial</button>
+  </div>
+
+  <!-- ══════ TIMER ══════ -->
+  <div id="section-timer" class="section active">
+
+    <!-- Audio mode toggle -->
+    <div class="audio-toggle">
+      <label>🔊 Modo audio:</label>
+      <div class="toggle-group">
+        <button class="tgl-btn active" id="tgl-voice" onclick="setAudioMode('voice',this)">🗣 Voz IA</button>
+        <button class="tgl-btn" id="tgl-beep" onclick="setAudioMode('beep',this)">🔔 Tonos</button>
+        <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">🔇 Sin audio</button>
+      </div>
+    </div>
+
+    <div class="config-grid">
+      <div class="config-card">
+        <div class="config-label">🔴 Trabajo</div>
+        <div class="config-val" id="cfg-work-val">30s</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj('work',-5)">−</button>
+          <div class="step-display" id="cfg-work">30</div>
+          <button class="step-btn" onclick="adj('work',5)">+</button>
+        </div>
+      </div>
+      <div class="config-card">
+        <div class="config-label">🔵 Descanso</div>
+        <div class="config-val" id="cfg-rest-val">15s</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj('rest',-5)">−</button>
+          <div class="step-display" id="cfg-rest">15</div>
+          <button class="step-btn" onclick="adj('rest',5)">+</button>
+        </div>
+      </div>
+      <div class="config-card">
+        <div class="config-label">🔁 Ejercicios</div>
+        <div class="config-val" id="cfg-rounds-val">5x</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj('rounds',-1)">−</button>
+          <div class="step-display" id="cfg-rounds">5</div>
+          <button class="step-btn" onclick="adj('rounds',1)">+</button>
+        </div>
+      </div>
+      <div class="config-card">
+        <div class="config-label">⏸ Pausa entre ejercicios</div>
+        <div class="config-val" id="cfg-pause-val">60s</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj('pause',-5)">−</button>
+          <div class="step-display" id="cfg-pause">60</div>
+          <button class="step-btn" onclick="adj('pause',5)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="exercises-card">
+      <div class="config-label">📋 Repeticiones por ejercicio</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="adj('series',-1)">−</button>
+        <div class="step-display" id="cfg-series">3</div>
+        <button class="step-btn" onclick="adj('series',1)">+</button>
+        <span style="font-size:13px;color:var(--text2);margin-left:8px">repeticiones / ejercicio</span>
+      </div>
+      <div class="exercises-grid" id="exercises-list"></div>
+    </div>
+
+    <div class="timer-display" id="timer-display">
+      <div class="timer-glow idle" id="timer-glow"></div>
+      <div style="position:relative;z-index:1">
+        <div id="phase-badge" class="phase-badge idle">Listo para iniciar</div>
+        <div class="time-big" id="time-display">00:30</div>
+        <div class="round-info" id="round-info">Ejercicio 1 / 5 · Repetición 1 / 3</div>
+        <div class="progress-bar"><div class="progress-fill work" id="progress-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn primary" id="start-btn" onclick="startTimer()">▶ Iniciar</button>
+      <button class="btn" id="pause-btn" onclick="pauseTimer()" style="display:none">⏸ Pausa</button>
+      <button class="btn danger" onclick="resetTimer()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- ══════ LOG ══════ -->
+  <div id="section-log" class="section">
+    <div class="section-title">Nueva sesión</div>
+    <div class="form-row">
+      <label class="form-label">Tipo de sesión</label>
+      <div class="chip-row">
+        <div class="chip active" onclick="setType('competition',this)">🏆 Competencia</div>
+        <div class="chip" onclick="setType('training',this)">🎯 Entrenamiento</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Modalidad ISSF</label>
+      <div class="modal-events" id="event-selector"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-row">
+        <label class="form-label">Fecha</label>
+        <input type="date" id="log-date">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Lugar / Competencia</label>
+        <input type="text" id="log-place" placeholder="Copa Nacional...">
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:.5rem">Ingreso de puntajes</div>
+    <div id="shot-entry"></div>
+    <div class="total-bar">
+      <div>
+        <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total calificación</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px" id="max-possible"></div>
+      </div>
+      <div class="total-score" id="total-score">0.0</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Condiciones / Notas</label>
+      <textarea id="log-notes" placeholder="Viento, luz, equipo, sensaciones del disparo..."></textarea>
+    </div>
+    <button class="btn primary" style="width:100%;justify-content:center" onclick="saveRecord()">💾 Guardar sesión</button>
+  </div>
+
+  <!-- ══════ HISTORY ══════ -->
+  <div id="section-history" class="section">
+    <div class="stat-grid" id="stat-grid"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div class="section-title" style="margin:0">Sesiones registradas</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn" onclick="exportCSV()" style="padding:6px 12px;font-size:12px">📥 Exportar CSV</button>
+        <button class="btn" onclick="exportJSON()" style="padding:6px 12px;font-size:12px">💾 Exportar JSON</button>
+        <label class="btn" style="padding:6px 12px;font-size:12px;cursor:pointer">📤 Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+        <button class="btn danger" onclick="clearAllRecords()" style="padding:6px 12px;font-size:12px">🗑 Borrar todo</button>
+      </div>
+    </div>
+    <div class="chip-row" style="margin-bottom:12px">
+      <div class="chip active" onclick="filterHistory('all',this)">Todas</div>
+      <div class="chip" onclick="filterHistory('competition',this)">Competencias</div>
+      <div class="chip" onclick="filterHistory('training',this)">Entrenamientos</div>
+    </div>
+    <div id="history-list" class="records-list"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  AUDIO ENGINE
+// ═══════════════════════════════════════════════════════
+let audioMode = 'voice'; // 'voice' | 'beep' | 'off'
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+
+function getACtx() {
+  if (!actx) actx = new AudioCtx();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function beep(freq, dur, type='sine', vol=0.4, delay=0) {
+  if (audioMode === 'off') return;
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + delay + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + dur + 0.05);
+  } catch(e){}
+}
+
+// ─── Text-to-speech ───────────────────────────────────
+let ttsQueue = [];
+let ttsSpeaking = false;
+
+function speak(text, priority=false) {
+  if (audioMode !== 'voice') return;
+  if (!window.speechSynthesis) { fallbackBeepForPhase(text); return; }
+  if (priority) {
+    window.speechSynthesis.cancel();
+    ttsQueue = [];
+    ttsSpeaking = false;
+  }
+  ttsQueue.push(text);
+  if (!ttsSpeaking) processQueue();
+}
+
+function processQueue() {
+  if (!ttsQueue.length) { ttsSpeaking = false; return; }
+  ttsSpeaking = true;
+  const text = ttsQueue.shift();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'es-ES';
+  utt.rate = 1.1;
+  utt.pitch = 1.0;
+  utt.volume = 1.0;
+  // prefer a Spanish voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const esVoice = voices.find(v => v.lang.startsWith('es'));
+  if (esVoice) utt.voice = esVoice;
+  utt.onend = () => { ttsSpeaking = false; processQueue(); };
+  utt.onerror = () => { ttsSpeaking = false; processQueue(); };
+  window.speechSynthesis.speak(utt);
+}
+
+function fallbackBeepForPhase(text) {
+  if (text.includes('Trabajo')) beep(880, .15, 'square', .3);
+  else if (text.includes('Descanso')) beep(520, .2, 'sine', .3);
+  else if (text.includes('Pausa')) beep(500, .15, 'triangle', .3);
+  else if (text.includes('tres') || text === '3') beep(600, .12, 'square', .35);
+  else if (text.includes('dos') || text === '2') beep(600, .12, 'square', .35);
+  else if (text.includes('uno') || text === '1') beep(600, .12, 'square', .35);
+}
+
+// Phase name → spoken text
+const PHASE_VOICE = {
+  work: 'Trabajo',
+  rest: 'Descanso',
+  prep: 'Pausa de ejercicio'
+};
+
+function announcePhase(phase) {
+  if (audioMode === 'off') return;
+  if (audioMode === 'voice') {
+    speak(PHASE_VOICE[phase] || phase, true);
+  } else {
+    // beep mode: distinct sound per phase
+    if (phase === 'work') { beep(880,.18,'square',.4,0); beep(1100,.22,'square',.3,.1); beep(1320,.35,'square',.25,.2); }
+    else if (phase === 'rest') { beep(660,.2,'sine',.35,0); beep(520,.25,'sine',.3,.15); beep(440,.4,'sine',.2,.3); }
+    else if (phase === 'prep') { beep(500,.15,'triangle',.35,0); beep(500,.15,'triangle',.3,.25); }
+  }
+}
+
+function playHalfTime() {
+  if (audioMode === 'off') return;
+  if (audioMode === 'voice') {
+    speak('Mitad', true);
+  } else {
+    beep(750, .12, 'triangle', .4, 0);
+    beep(750, .12, 'triangle', .35, .2);
+  }
+}
+
+function playDone() {
+  if (audioMode === 'off') return;
+  if (audioMode === 'voice') {
+    speak('Sesión completada. ¡Excelente trabajo!', true);
+  } else {
+    [523,659,784,1047].forEach((f,i) => beep(f,.3,'square',.3,i*.12));
+  }
+}
+
+// ─── Spoken countdown 3,2,1 ──────────────────────────
+let cdTimers = [];
+
+function cancelAllCD() {
+  cdTimers.forEach(t => clearTimeout(t));
+  cdTimers = [];
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  ttsSpeaking = false; ttsQueue = [];
+}
+
+function spokenCountdown(cb) {
+  // speaks "tres... dos... uno..." then calls cb
+  if (audioMode === 'off') { cb(); return; }
+  cancelAllCD();
+  const words = audioMode === 'voice' ? ['Tres','Dos','Uno'] : [null,null,null];
+  [0,900,1800].forEach((delay, i) => {
+    cdTimers.push(setTimeout(() => {
+      if (audioMode === 'voice') speak(words[i], true);
+      else beep(600 + i*60, .12, 'square', .4);
+    }, delay));
+  });
+  cdTimers.push(setTimeout(() => { cb(); }, 2600));
+}
+
+function setAudioMode(mode, el) {
+  audioMode = mode;
+  document.querySelectorAll('.tgl-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (mode !== 'off') getACtx();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TIMER STATE
+// ═══════════════════════════════════════════════════════
+let cfg = {work:30, rest:15, rounds:5, pause:60, series:3};
+let mainTimer = null;
+let phase = 'work';
+let curRound = 1, curSeries = 1;
+let timeLeft = 30, totalTime = 30;
+let running = false, paused = false;
+let halfNotified = false;
+let endingCDActive = false;  // true while 3-sec end countdown is running
+
+
+function adj(k, d) {
+  const lim = {work:[5,300,5],rest:[0,300,5],rounds:[1,25,1],pause:[0,300,5],series:[1,60,1]};
+  const [mn,mx] = lim[k];
+  cfg[k] = Math.max(mn, Math.min(mx, cfg[k]+d));
+  document.getElementById('cfg-'+k).textContent = cfg[k];
+  const sfx = k==='rounds'?'x':'s';
+  document.getElementById('cfg-'+k+'-val').textContent = cfg[k] + sfx;
+  if (k==='series') renderSeriesList();
+  if (!running && !paused) {
+    if (k==='work') { timeLeft=cfg.work; totalTime=cfg.work; updateDisplay(); }
+    updateRoundInfo();
+  }
+}
+
+function renderSeriesList() {
+  const el = document.getElementById('exercises-list');
+  let html = '';
+  for (let i=0; i<cfg.series; i++) {
+    const active = running && i===(curSeries-1);
+    html += `<div class="ex-item${active?' active':''}" title="Repetición ${i+1}">${i+1}</div>`;
+  }
+  el.innerHTML = html;
+}
+
+function updateDisplay() {
+  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const s = (timeLeft%60).toString().padStart(2,'0');
+  const td = document.getElementById('time-display');
+  td.textContent = `${m}:${s}`;
+  td.className = 'time-big ' + phase;
+  document.getElementById('timer-glow').className = 'timer-glow ' + phase;
+  const pct = totalTime>0 ? (timeLeft/totalTime)*100 : 0;
+  const pf = document.getElementById('progress-fill');
+  pf.style.width = pct+'%';
+  pf.className = 'progress-fill ' + phase;
+  updateRoundInfo();
+}
+
+function updateRoundInfo() {
+  document.getElementById('round-info').textContent =
+    `Ejercicio ${curRound} / ${cfg.rounds} · Repetición ${curSeries} / ${cfg.series}`;
+}
+
+function setPhaseBadge(txt, cls) {
+  const b = document.getElementById('phase-badge');
+  b.textContent = txt;
+  b.className = 'phase-badge ' + cls;
+}
+
+// ═══════════════════════════════════════════════════════
+//  TIMER CORE
+// ═══════════════════════════════════════════════════════
+function startTimer() {
+  getACtx();
+  if (paused) {
+    paused = false;
+    document.getElementById('pause-btn').innerHTML = '⏸ Pausa';
+    document.getElementById('pause-btn').style.display = 'flex';
+    document.getElementById('start-btn').style.display = 'none';
+    beginPhase(phase, false); // resume — no re-announce
+    return;
+  }
+  running = true; paused = false;
+  phase = 'work'; curRound = 1; curSeries = 1;
+  timeLeft = cfg.work; totalTime = cfg.work;
+  halfNotified = false; endingCDActive = false;
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('pause-btn').style.display = 'flex';
+  renderSeriesList();
+  beginPhase('work', true);
+}
+
+function beginPhase(p, announce) {
+  phase = p;
+  endingCDActive = false;
+  halfNotified = false;
+  clearTimeout(mainTimer);
+  if (announce) {
+    announcePhase(p);
+    setTimeout(() => { updateDisplay(); renderSeriesList(); tick(); }, 300);
+  } else {
+    updateDisplay(); renderSeriesList(); tick();
+  }
+  // set badge
+  const badges = {work:'🔴 TRABAJO', rest:'🔵 DESCANSO', prep:'⏸ PAUSA EJERCICIO'};
+  const badgeCls = {work:'work', rest:'rest', prep:'prep'};
+  setPhaseBadge(badges[p]||p, badgeCls[p]||'idle');
+}
+
+function tick() {
+  if (!running || paused) { clearTimeout(mainTimer); return; }
+  mainTimer = setTimeout(() => {
+    timeLeft--;
+
+    // Half-time notification (only for work phase)
+    const half = Math.floor(totalTime / 2);
+    if (phase === 'work' && !halfNotified && timeLeft === half) {
+      halfNotified = true;
+      playHalfTime();
+      // Visual flash
+      const td = document.getElementById('timer-display');
+      const flash = document.createElement('div');
+      flash.className = 'halftime-flash';
+      td.appendChild(flash);
+      setTimeout(() => flash.remove(), 900);
+    }
+
+    // 3-second ending countdown trigger
+    if (!endingCDActive && timeLeft === 3 && timeLeft > 0) {
+      endingCDActive = true;
+      updateDisplay();
+      spokenCountdown(() => {
+        endingCDActive = false;
+        // timeLeft should be ~0 by now, advance
+        timeLeft = 0;
+        updateDisplay();
+        advancePhase();
+      });
+      return; // stop normal ticking — countdown handles the rest
+    }
+
+    if (timeLeft <= 0) {
+      advancePhase();
+      return;
+    }
+
+    updateDisplay();
+    tick();
+  }, 1000);
+}
+
+function advancePhase() {
+  cancelAllCD();
+  endingCDActive = false;
+  clearTimeout(mainTimer);
+
+  if (phase === 'work') {
+    // After work: go to rest (if configured), else count the round done
+    if (cfg.rest > 0) {
+      timeLeft = cfg.rest; totalTime = cfg.rest;
+      beginPhase('rest', true);
+    } else {
+      finishRound();
+    }
+
+  } else if (phase === 'rest') {
+    // After rest: round is complete
+    finishRound();
+
+  } else if (phase === 'prep') {
+    // After pause-ejercicio: start next exercise
+    startNextExercise();
+  }
+}
+
+// Called when one work+rest cycle (1 round) finishes
+function finishRound() {
+  if (curSeries < cfg.series) {
+    // More rounds within this exercise → keep going
+    curSeries++;
+    timeLeft = cfg.work; totalTime = cfg.work;
+    beginPhase('work', true);
+  } else {
+    // All rounds of this exercise done → check if more exercises remain
+    if (curRound < cfg.rounds) {
+      // Enter pausa-ejercicio (or go directly if pause=0)
+      if (cfg.pause > 0) {
+        timeLeft = cfg.pause; totalTime = cfg.pause;
+        beginPhase('prep', true);
+      } else {
+        startNextExercise();
+      }
+    } else {
+      doneTimer();
+    }
+  }
+}
+
+function startNextExercise() {
+  curRound++; curSeries = 1;
+  timeLeft = cfg.work; totalTime = cfg.work;
+  beginPhase('work', true);
+}
+
+function doneTimer() {
+  running = false; clearTimeout(mainTimer);
+  playDone();
+  setPhaseBadge('✅ ¡Sesión completada!', 'done');
+  const td = document.getElementById('time-display');
+  td.textContent = '00:00';
+  td.className = 'time-big';
+  document.getElementById('timer-glow').className = 'timer-glow';
+  document.getElementById('start-btn').style.display = 'flex';
+  document.getElementById('start-btn').innerHTML = '▶ Iniciar';
+  document.getElementById('pause-btn').style.display = 'none';
+  renderSeriesList();
+}
+
+function pauseTimer() {
+  if (!running) return;
+  paused = !paused;
+  if (paused) {
+    clearTimeout(mainTimer);
+    cancelAllCD();
+    endingCDActive = false;
+    document.getElementById('pause-btn').innerHTML = '▶ Reanudar';
+    setPhaseBadge('⏸ Pausado', 'idle');
+    document.getElementById('start-btn').style.display = 'flex';
+    document.getElementById('start-btn').innerHTML = '▶ Reanudar';
+    document.getElementById('start-btn').onclick = resumeTimer;
+    document.getElementById('pause-btn').style.display = 'none';
+  }
+}
+
+function resumeTimer() {
+  if (!paused) return;
+  paused = false;
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('start-btn').onclick = startTimer;
+  document.getElementById('pause-btn').style.display = 'flex';
+  document.getElementById('pause-btn').innerHTML = '⏸ Pausa';
+  const badges = {work:'🔴 TRABAJO', rest:'🔵 DESCANSO', prep:'⏸ PAUSA EJERCICIO'};
+  const badgeCls = {work:'work', rest:'rest', prep:'prep'};
+  setPhaseBadge(badges[phase]||phase, badgeCls[phase]||'idle');
+  tick();
+}
+
+function resetTimer() {
+  clearTimeout(mainTimer); cancelAllCD();
+  running = false; paused = false; endingCDActive = false;
+  phase = 'work'; curRound = 1; curSeries = 1;
+  timeLeft = cfg.work; totalTime = cfg.work;
+  halfNotified = false;
+  document.getElementById('start-btn').style.display = 'flex';
+  document.getElementById('start-btn').innerHTML = '▶ Iniciar';
+  document.getElementById('start-btn').onclick = startTimer;
+  document.getElementById('pause-btn').style.display = 'none';
+  setPhaseBadge('Listo para iniciar', 'idle');
+  document.getElementById('timer-glow').className = 'timer-glow idle';
+  updateDisplay(); renderSeriesList();
+}
+
+// ═══════════════════════════════════════════════════════
+//  SHOOTING LOG
+// ═══════════════════════════════════════════════════════
+const ISSF_EVENTS = [
+  {id:'ap10m',  name:'10m Pistola Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp · 75 min'},
+  {id:'ar10m',  name:'10m Carabina Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp · 75 min'},
+  {id:'rfp25m', name:'25m Pistola Fuego Rápido',   shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'60 disp · hit/miss'},
+  {id:'p25m',   name:'25m Pistola (Damas)',         shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'30+30 disp · 2 etapas'},
+  {id:'r3p50m', name:'50m Carabina 3 Posiciones',  shots:120, max:1264,  seriesCount:3,  shotsPerSeries:40, decimal:true,  desc:'3×40 disp · 2h45min', positions:['Rodilla (40)','Tendido (40)','Pie (40)']},
+  {id:'trap',   name:'Trap (Foso)',                 shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos · 5 series'},
+  {id:'skeet',  name:'Skeet',                       shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos · 5 series'},
+];
+
+let sessionType = 'competition';
+let selectedEvent = ISSF_EVENTS[0];
+let shotInputs = [];
+let records = (()=>{ try { const d=localStorage.getItem('ost_records'); return d?JSON.parse(d):[]; } catch(e){ return []; } })();
+let filterMode = 'all';
+
+function setType(t, el) {
+  sessionType = t;
+  document.querySelectorAll('#section-log .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function renderEventSelector() {
+  document.getElementById('event-selector').innerHTML = ISSF_EVENTS.map(e =>
+    `<div class="event-card${selectedEvent&&selectedEvent.id===e.id?' selected':''}" onclick="selectEvent('${e.id}')">
+      <div class="ev-name">${e.name}</div>
+      <div class="ev-detail">${e.desc}</div>
+    </div>`
+  ).join('');
+  document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+  renderShotEntry();
+}
+
+function selectEvent(id) {
+  selectedEvent = ISSF_EVENTS.find(e=>e.id===id);
+  renderEventSelector();
+}
+
+function renderShotEntry() {
+  const ev = selectedEvent; if (!ev) return;
+  shotInputs = [];
+  let html = '<div class="shot-grid">';
+  for (let si=0; si<ev.seriesCount; si++) {
+    const lbl = ev.positions ? ev.positions[si] : `Serie ${si+1}`;
+    html += `<div class="series-block"><div class="series-lbl">${lbl} — ${ev.shotsPerSeries} disparos</div><div class="shots-row">`;
+    for (let i=0; i<ev.shotsPerSeries; i++) {
+      const iid = `s${si}_d${i}`;
+      shotInputs.push({id:iid, decimal:ev.decimal});
+      if (ev.decimal) {
+        // decimal: 0.0 – 10.9
+        html += `<div class="shot-wrap">
+          <span class="shot-num">#${si*ev.shotsPerSeries+i+1}</span>
+          <input class="shot-input" type="number" id="${iid}"
+            min="0" max="10.9" step="0.1" placeholder="10.9"
+            oninput="validateShot(this,true)" onblur="formatShot(this,true)">
+        </div>`;
+      } else {
+        // hit/miss: 0 or 1
+        html += `<div class="shot-wrap">
+          <span class="shot-num">#${si*ev.shotsPerSeries+i+1}</span>
+          <input class="shot-input" type="number" id="${iid}"
+            min="0" max="1" step="1" placeholder="1"
+            oninput="validateShot(this,false)" onblur="formatShot(this,false)">
+        </div>`;
+      }
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  if (ev.decimal) {
+    html += `<div class="inner10-hint">⚡ Decimal ISSF: 0.0 – 10.9 por disparo. Inner Ten = <strong>10.9</strong>. Máximo: <strong>${ev.max} pts</strong></div>`;
+  } else {
+    html += `<div class="inner10-hint">✓ Hit = 1 · Miss = 0. Máximo: <strong>${ev.max} pts</strong></div>`;
+  }
+  document.getElementById('shot-entry').innerHTML = html;
+  document.getElementById('max-possible').textContent = `Máximo posible: ${ev.max} pts`;
+  calcTotal();
+}
+
+function validateShot(el, decimal) {
+  let v = parseFloat(el.value);
+  if (isNaN(v)) { el.classList.remove('inner10','invalid'); calcTotal(); return; }
+  if (decimal) {
+    if (v > 10.9) { el.value = '10.9'; v = 10.9; }
+    if (v < 0)   { el.value = '0.0';  v = 0; }
+    el.classList.toggle('inner10', v === 10.9);
+    el.classList.toggle('invalid', v > 10.9);
+  } else {
+    if (v > 1) { el.value = '1'; v = 1; }
+    if (v < 0) { el.value = '0'; v = 0; }
+    el.classList.remove('inner10','invalid');
+  }
+  calcTotal();
+}
+
+function formatShot(el, decimal) {
+  const v = parseFloat(el.value);
+  if (!isNaN(v) && el.value !== '') {
+    el.value = decimal ? v.toFixed(1) : v.toFixed(0);
+  }
+  validateShot(el, decimal);
+}
+
+function calcTotal() {
+  let t = 0;
+  shotInputs.forEach(({id, decimal}) => {
+    const el = document.getElementById(id); if (!el) return;
+    const v = parseFloat(el.value||'0')||0;
+    t += decimal ? Math.min(10.9, Math.max(0, v)) : Math.min(1, Math.max(0, Math.round(v)));
+  });
+  document.getElementById('total-score').textContent =
+    selectedEvent?.decimal ? t.toFixed(1) : t.toFixed(0);
+}
+
+function saveRecord() {
+  if (!selectedEvent) { alert('Selecciona una modalidad'); return; }
+  const total = parseFloat(document.getElementById('total-score').textContent)||0;
+  const shots = shotInputs.map(({id}) => parseFloat(document.getElementById(id)?.value||'0')||0);
+  records.unshift({
+    id: Date.now(), type: sessionType,
+    event: selectedEvent.id, eventName: selectedEvent.name,
+    date: document.getElementById('log-date').value || new Date().toISOString().split('T')[0],
+    place: document.getElementById('log-place').value || 'Sin especificar',
+    score: total, maxScore: selectedEvent.max, shots,
+    notes: document.getElementById('log-notes').value,
+    decimal: selectedEvent.decimal
+  });
+  document.getElementById('log-place').value = '';
+  document.getElementById('log-notes').value = '';
+  persistRecords();
+  switchTab('history');
+}
+
+function renderHistory() {
+  const filtered = filterMode==='all' ? records : records.filter(r=>r.type===filterMode);
+  const comps = records.filter(r=>r.type==='competition');
+  const bestScore = records.length ? Math.max(...records.map(r=>r.score)) : 0;
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${records.length}</div><div class="stat-lbl">Total sesiones</div></div>
+    <div class="stat-card"><div class="stat-num">${comps.length}</div><div class="stat-lbl">Competencias</div></div>
+    <div class="stat-card"><div class="stat-num">${bestScore>0?bestScore.toFixed(1):'-'}</div><div class="stat-lbl">Mejor puntaje</div></div>
+  `;
+  const list = document.getElementById('history-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">🎯<br><br>Sin registros aún.<br>Registra tu primera sesión.</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(r => {
+    const pct = r.maxScore ? Math.round((r.score/r.maxScore)*100) : 0;
+    return `<div class="record-card">
+      <div class="record-header">
+        <div>
+          <div class="record-event">${r.eventName}</div>
+          <div class="record-meta">${r.date} · ${r.place}</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <div>
+            <div class="record-score">${r.decimal?r.score.toFixed(1):r.score}</div>
+            <div class="record-pct">${pct}% del máx.</div>
+          </div>
+          <button class="del-btn" onclick="deleteRecord(${r.id})">🗑</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <span class="badge ${r.type==='competition'?'comp':'train'}">${r.type==='competition'?'🏆 Competencia':'🎯 Entrenamiento'}</span>
+        ${r.notes?`<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${r.notes}</span>`:''}
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function filterHistory(mode, el) {
+  filterMode = mode;
+  document.querySelectorAll('#section-history .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function deleteRecord(id) { if(!confirm('¿Eliminar esta sesión?')) return; records=records.filter(r=>r.id!==id); persistRecords(); renderHistory(); }
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((b,i) => {
+    b.classList.toggle('active', ['timer','log','history'][i]===t);
+  });
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+t).classList.add('active');
+  if (t==='log') renderEventSelector();
+  if (t==='history') renderHistory();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PERSISTENCE — localStorage
+// ═══════════════════════════════════════════════════════
+function persistRecords() {
+  try { localStorage.setItem('ost_records', JSON.stringify(records)); } catch(e) {}
+}
+
+function clearAllRecords() {
+  if (!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
+  records = [];
+  persistRecords();
+  renderHistory();
+}
+
+// ─── Export CSV ──────────────────────────────────────
+function exportCSV() {
+  if (!records.length) { alert('No hay registros para exportar.'); return; }
+  const header = ['ID','Tipo','Modalidad','Fecha','Lugar','Puntaje','Maximo','Porcentaje','Notas'];
+  const rows = records.map(r => [
+    r.id, r.type, r.eventName, r.date, `"${r.place}"`,
+    r.decimal ? r.score.toFixed(1) : r.score,
+    r.maxScore,
+    r.maxScore ? Math.round((r.score/r.maxScore)*100)+'%' : '-',
+    `"${(r.notes||'').replace(/"/g,"''")}"`
+  ]);
+  const csv = [header, ...rows].map(r => r.join(',')).join('
+');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `shooting_trainer_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Export JSON ─────────────────────────────────────
+function exportJSON() {
+  if (!records.length) { alert('No hay registros para exportar.'); return; }
+  const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `shooting_trainer_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Import JSON ─────────────────────────────────────
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Formato inválido');
+      const existing = new Set(records.map(r=>r.id));
+      const newRecs = imported.filter(r => !existing.has(r.id));
+      records = [...records, ...newRecs].sort((a,b)=>b.id-a.id);
+      persistRecords();
+      renderHistory();
+      alert(`✅ Importados ${newRecs.length} registros nuevos. (${imported.length - newRecs.length} ya existían)`);
+    } catch(err) {
+      alert('❌ Error al importar: el archivo no es válido.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ═══════════════════════════════════════════════════════
+//  PWA — Manifest + Service Worker (inline, no server needed)
+// ═══════════════════════════════════════════════════════
+(function setupPWA() {
+  // Inline SVG icon as data URI (target/crosshair)
+  const iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="80" fill="#0f1117"/>
+    <circle cx="256" cy="256" r="180" fill="none" stroke="#1dce8e" stroke-width="18"/>
+    <circle cx="256" cy="256" r="110" fill="none" stroke="#1dce8e" stroke-width="14"/>
+    <circle cx="256" cy="256" r="40" fill="#1dce8e"/>
+    <line x1="256" y1="56" x2="256" y2="136" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
+    <line x1="256" y1="376" x2="256" y2="456" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
+    <line x1="56" y1="256" x2="136" y2="256" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
+    <line x1="376" y1="256" x2="456" y2="256" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
+  </svg>`;
+  const iconURL = 'data:image/svg+xml;base64,' + btoa(iconSVG);
+
+  // Inject apple-touch-icon
+  const appleIcon = document.createElement('link');
+  appleIcon.rel = 'apple-touch-icon';
+  appleIcon.href = iconURL;
+  document.head.appendChild(appleIcon);
+
+  // Inject favicon
+  const favicon = document.createElement('link');
+  favicon.rel = 'icon';
+  favicon.type = 'image/svg+xml';
+  favicon.href = iconURL;
+  document.head.appendChild(favicon);
+
+  // Build manifest blob
+  const manifest = {
+    name: 'Olympic Shooting Trainer',
+    short_name: 'Shooting',
+    description: 'Cronómetro interval timer y registro ISSF para tiro olímpico',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#0f1117',
+    theme_color: '#0f1117',
+    orientation: 'portrait-primary',
+    lang: 'es',
+    icons: [
+      { src: iconURL, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+      { src: iconURL, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  document.getElementById('pwa-manifest').href = manifestURL;
+
+  // Service Worker (inline via blob) — caches the page for offline use
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE = 'ost-v1';
+const ASSETS = [self.location.href];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+  ).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match(e.request))));
+});`;
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL, {scope: './'})
+      .then(() => console.log('[PWA] Service worker registered'))
+      .catch(e => console.log('[PWA] SW error:', e));
+  }
+
+  // Show install prompt banner
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner();
+  });
+
+  function showInstallBanner() {
+    if (document.getElementById('install-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'install-banner';
+    banner.style.cssText = `
+      position:fixed;bottom:0;left:0;right:0;
+      background:#1a1d27;border-top:1px solid #2d3148;
+      padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+      z-index:999;gap:10px;flex-wrap:wrap;
+    `;
+    banner.innerHTML = `
+      <div style="font-size:13px;color:#e8eaf0;flex:1">
+        📲 <strong>Instalar app</strong> en tu dispositivo para uso sin internet
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="doInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Instalar</button>
+        <button onclick="document.getElementById('install-banner').remove()" style="padding:7px 12px;background:none;border:1px solid #3d4260;border-radius:8px;color:#8b90a8;font-size:13px;cursor:pointer;font-family:inherit">Ahora no</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+  }
+
+  window.doInstall = function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      const b = document.getElementById('install-banner');
+      if (b) b.remove();
+    });
+  };
+
+  // iOS: show manual instructions since iOS doesn't support beforeinstallprompt
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true;
+  if (isIOS && !isStandalone) {
+    setTimeout(() => {
+      if (document.getElementById('install-banner')) return;
+      const banner = document.createElement('div');
+      banner.id = 'install-banner';
+      banner.style.cssText = `
+        position:fixed;bottom:0;left:0;right:0;
+        background:#1a1d27;border-top:1px solid #2d3148;
+        padding:14px 16px;z-index:999;
+      `;
+      banner.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <strong style="font-size:14px;color:#e8eaf0">📲 Instalar en iPhone</strong>
+          <button onclick="this.closest('#install-banner').remove()" style="background:none;border:none;color:#8b90a8;font-size:18px;cursor:pointer;line-height:1">×</button>
+        </div>
+        <div style="font-size:13px;color:#8b90a8;line-height:1.6">
+          Toca <strong style="color:#e8eaf0">Compartir</strong> (□↑) en Safari → 
+          <strong style="color:#e8eaf0">"Agregar a pantalla de inicio"</strong> → 
+          <strong style="color:#1dce8e">Agregar</strong>
+        </div>
+      `;
+      document.body.appendChild(banner);
+    }, 2500);
+  }
+})();
+
+// ─── Init ─────────────────────────────────────────────
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+renderSeriesList();
+updateDisplay();
+</script>
+</body>
+</html>
