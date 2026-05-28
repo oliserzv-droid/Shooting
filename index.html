@@ -17,45 +17,33 @@
   --border:#2d3148;--border2:#3d4260;
   --text:#e8eaf0;--text2:#8b90a8;--text3:#555a75;
   --green:#1dce8e;--blue:#4b9fff;--amber:#f5a623;--red:#f05353;
-  --radius:12px;--radius-sm:8px;
-  --nav-h:64px;
+  --radius:12px;--radius-sm:8px;--nav-h:64px;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh}
-
-/* ── LAYOUT ── */
-.app{max-width:680px;margin:0 auto;padding:0;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+.app{max-width:680px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 .top-bar{padding:14px 16px 0;flex-shrink:0}
-.top-bar h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin-bottom:0;display:flex;align-items:center;gap:8px}
+.top-bar h1{font-size:17px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
 .top-bar h1 span{color:var(--green)}
-.scroll-area{flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom))}
+.scroll-area{flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom))}
 .section{display:none}.section.active{display:block}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(var(--nav-h) + env(safe-area-inset-bottom));
-  background:var(--bg2);border-top:1px solid var(--border);
-  display:flex;align-items:flex-start;justify-content:space-around;
-  padding-top:8px;padding-bottom:env(safe-area-inset-bottom);
-  z-index:50;max-width:680px;margin:0 auto;
-}
-.tab-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:4px 0;border:none;background:none;cursor:pointer;
-  color:var(--text3);font-size:10px;font-family:inherit;font-weight:500;
-  transition:color .15s;letter-spacing:.02em;
-}
-.tab-item .tab-icon{font-size:22px;line-height:1;transition:transform .15s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-around;padding-top:8px;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;border:none;background:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:inherit;font-weight:500;transition:color .15s;letter-spacing:.02em}
+.tab-item .ti{font-size:22px;line-height:1;transition:transform .15s}
 .tab-item.active{color:var(--green)}
-.tab-item.active .tab-icon{transform:scale(1.1)}
-
-/* ── HOME (timer running view) ── */
-.home-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h) - 80px);min-height:calc(100dvh - var(--nav-h) - 80px);gap:20px;padding:10px 0}
-.timer-display{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;width:100%;position:relative;overflow:hidden}
-.timer-glow{position:absolute;inset:0;opacity:0;border-radius:var(--radius);transition:opacity .5s;pointer-events:none}
-.timer-glow.work{background:radial-gradient(ellipse at center,rgba(29,206,142,.1) 0%,transparent 70%);opacity:1}
-.timer-glow.rest{background:radial-gradient(ellipse at center,rgba(75,159,255,.1) 0%,transparent 70%);opacity:1}
-.timer-glow.prep{background:radial-gradient(ellipse at center,rgba(245,166,35,.1) 0%,transparent 70%);opacity:1}
+.tab-item.active .ti{transform:scale(1.1)}
+.home-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0}
+.idle-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:calc(100dvh - var(--nav-h) - 80px)}
+.idle-icon{font-size:72px;opacity:.25}
+.idle-hint{font-size:14px;color:var(--text2);text-align:center;line-height:1.6}
+.idle-hint strong{color:var(--text)}
+.big-start{width:140px;height:140px;border-radius:50%;background:var(--green);border:none;color:#000;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 0 40px rgba(29,206,142,.3);transition:transform .15s}
+.big-start:hover{transform:scale(1.04)}
+.big-start-icon{font-size:36px}
+.timer-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;width:100%;position:relative;overflow:hidden}
+.tglow{position:absolute;inset:0;border-radius:var(--radius);pointer-events:none;transition:opacity .5s;opacity:0}
+.tglow.work{background:radial-gradient(ellipse at center,rgba(29,206,142,.1) 0%,transparent 70%);opacity:1}
+.tglow.rest{background:radial-gradient(ellipse at center,rgba(75,159,255,.1) 0%,transparent 70%);opacity:1}
+.tglow.prep{background:radial-gradient(ellipse at center,rgba(245,166,35,.1) 0%,transparent 70%);opacity:1}
 .phase-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:16px;border:1px solid}
 .phase-badge.work{background:rgba(29,206,142,.15);color:var(--green);border-color:rgba(29,206,142,.3)}
 .phase-badge.rest{background:rgba(75,159,255,.15);color:var(--blue);border-color:rgba(75,159,255,.3)}
@@ -72,25 +60,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .progress-fill.work{background:var(--green)}
 .progress-fill.rest{background:var(--blue)}
 .progress-fill.prep{background:var(--amber)}
+.reps-mini{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;width:100%}
+.reps-mini-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:600}
+.reps-grid{display:flex;flex-wrap:wrap;gap:6px}
+.rep-chip{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
+.rep-chip.active{background:rgba(29,206,142,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(29,206,142,.3)}
 .home-controls{display:flex;gap:10px;justify-content:center;width:100%}
-.exercises-mini{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;width:100%}
-.exercises-mini-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:600}
-.exercises-grid{display:flex;flex-wrap:wrap;gap:6px}
-.ex-item{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
-.ex-item.active{background:rgba(29,206,142,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(29,206,142,.3)}
-.halftime-flash{position:absolute;inset:0;background:rgba(245,166,35,.12);border-radius:var(--radius);pointer-events:none;animation:flashfade .8s ease-out forwards}
-@keyframes flashfade{0%{opacity:1}100%{opacity:0}}
-
-/* ── HOME idle state (big start button) ── */
-.idle-start{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:calc(100vh - var(--nav-h) - 80px);min-height:calc(100dvh - var(--nav-h) - 80px)}
-.idle-icon{font-size:72px;opacity:.25}
-.idle-hint{font-size:14px;color:var(--text2);text-align:center;line-height:1.6}
-.idle-hint strong{color:var(--text)}
-.big-start{width:140px;height:140px;border-radius:50%;background:var(--green);border:none;color:#000;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 0 40px rgba(29,206,142,.3);transition:transform .15s,box-shadow .15s}
-.big-start:hover{transform:scale(1.04);box-shadow:0 0 60px rgba(29,206,142,.45)}
-.big-start-icon{font-size:36px}
-
-/* ── CONFIG ── */
+.halftime-flash{position:absolute;inset:0;background:rgba(245,166,35,.12);border-radius:var(--radius);pointer-events:none;animation:hflash .8s ease-out forwards}
+@keyframes hflash{0%{opacity:1}100%{opacity:0}}
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
 .config-label{font-size:11px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
@@ -99,22 +76,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .step-btn{width:32px;height:32px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text);transition:background .1s;flex-shrink:0}
 .step-btn:hover{background:var(--border2)}
 .step-display{min-width:44px;text-align:center;font-size:16px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text)}
-.exercises-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
-.audio-toggle{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
-.audio-toggle label{font-size:13px;color:var(--text2);font-weight:500}
-.toggle-group{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
+.reps-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.audio-row{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
+.audio-row label{font-size:13px;color:var(--text2);font-weight:500}
+.tgl-group{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
 .tgl-btn{padding:5px 12px;border:none;border-radius:6px;background:none;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;white-space:nowrap}
 .tgl-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
-
-/* ── BUTTONS ── */
 .btn{padding:9px 20px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit;font-weight:500}
 .btn:hover{background:var(--bg3)}
 .btn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:600}
 .btn.primary:hover{background:#15a870}
 .btn.danger{background:rgba(240,83,83,.15);color:var(--red);border-color:rgba(240,83,83,.3)}
-.btn.danger:hover{background:rgba(240,83,83,.25)}
-
-/* ── FORMS ── */
 .form-row{margin-bottom:14px}
 .form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
 input[type=text],input[type=date],input[type=number],select,textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .15s}
@@ -140,10 +112,9 @@ textarea{resize:vertical;min-height:60px}
 .shot-input::-webkit-outer-spin-button,.shot-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .shot-input:focus{border-color:var(--green)}
 .shot-input.inner10{border-color:var(--green);background:rgba(29,206,142,.12);color:var(--green);font-weight:600}
-.shot-input.invalid{border-color:var(--red);background:rgba(240,83,83,.08)}
 .total-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin:10px 0}
 .total-score{font-size:36px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green)}
-.inner10-hint{font-size:11px;color:var(--green);margin-top:6px;padding:6px 10px;background:rgba(29,206,142,.08);border-radius:6px;border:1px solid rgba(29,206,142,.2)}
+.hint-box{font-size:11px;color:var(--green);margin-top:6px;padding:6px 10px;background:rgba(29,206,142,.08);border-radius:6px;border:1px solid rgba(29,206,142,.2)}
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
 .stat-num{font-size:26px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--green)}
@@ -161,122 +132,117 @@ textarea{resize:vertical;min-height:60px}
 .prog-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:10px}
 .prog-fill{height:100%;border-radius:2px;background:var(--green)}
 .del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;font-size:16px}
-.del-btn:hover{color:var(--red);background:rgba(240,83,83,.1)}
+.del-btn:hover{color:var(--red)}
 .empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:14px}
-.section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;margin-top:1rem;text-transform:uppercase;letter-spacing:.04em}
+.sec-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;margin-top:1rem;text-transform:uppercase;letter-spacing:.04em}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="top-bar">
-    <h1>🎯 Olympic <span>Shooting Trainer</span></h1>
+    <h1>&#127919; Olympic <span>Shooting Trainer</span></h1>
   </div>
-
   <div class="scroll-area">
 
-    <!-- ══════ HOME ══════ -->
+    <!-- HOME -->
     <div id="section-home" class="section active">
-      <!-- Idle state (not running) -->
-      <div class="idle-start" id="idle-state">
-        <div class="idle-icon">🎯</div>
-        <div class="idle-hint">
-          Configura tu sesión en <strong>Config</strong><br>y pulsa Iniciar para comenzar
-        </div>
+      <div class="idle-wrap" id="idle-state">
+        <div class="idle-icon">&#127919;</div>
+        <div class="idle-hint">Configura en <strong>Config</strong><br>y pulsa Iniciar</div>
         <button class="big-start" onclick="startTimer()">
-          <div class="big-start-icon">▶</div>
+          <div class="big-start-icon">&#9654;</div>
           <div>INICIAR</div>
         </button>
       </div>
-      <!-- Running state -->
       <div class="home-wrap" id="running-state" style="display:none">
-        <div class="timer-display" id="timer-display">
-          <div class="timer-glow idle" id="timer-glow"></div>
+        <div class="timer-box" id="timer-box">
+          <div class="tglow idle" id="tglow"></div>
           <div style="position:relative;z-index:1">
-            <div id="phase-badge" class="phase-badge idle">Listo</div>
+            <div class="phase-badge idle" id="phase-badge">Listo</div>
             <div class="time-big" id="time-display">00:30</div>
-            <div class="round-info" id="round-info">Ejercicio 1 / 5 · Repetición 1 / 3</div>
+            <div class="round-info" id="round-info">Ejercicio 1 / 5 &middot; Repeticion 1 / 3</div>
             <div class="progress-bar"><div class="progress-fill work" id="progress-fill" style="width:100%"></div></div>
           </div>
         </div>
-        <div class="exercises-mini">
-          <div class="exercises-mini-label">Repeticiones</div>
-          <div class="exercises-grid" id="exercises-list"></div>
+        <div class="reps-mini">
+          <div class="reps-mini-label">Repeticiones</div>
+          <div class="reps-grid" id="reps-grid"></div>
         </div>
         <div class="home-controls">
-          <button class="btn" id="pause-btn" onclick="pauseTimer()">⏸ Pausa</button>
-          <button class="btn danger" onclick="resetTimer()">↺ Reset</button>
+          <button class="btn" id="pause-btn" onclick="pauseTimer()">&#9646;&#9646; Pausa</button>
+          <button class="btn danger" onclick="resetTimer()">&#8634; Reset</button>
         </div>
       </div>
     </div>
 
-    <!-- ══════ CONFIG ══════ -->
+    <!-- CONFIG -->
     <div id="section-config" class="section">
-      <div class="audio-toggle">
-        <label>🔊 Modo audio:</label>
-        <div class="toggle-group">
-          <button class="tgl-btn active" id="tgl-voice" onclick="setAudioMode('voice',this)">🗣 Voz IA</button>
-          <button class="tgl-btn" id="tgl-beep" onclick="setAudioMode('beep',this)">🔔 Tonos</button>
-          <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">🔇 Sin audio</button>
+      <div class="audio-row">
+        <label>Audio:</label>
+        <div class="tgl-group">
+          <button class="tgl-btn active" id="tgl-voice" onclick="setAudioMode('voice',this)">Voz IA</button>
+          <button class="tgl-btn" id="tgl-beep" onclick="setAudioMode('beep',this)">Tonos</button>
+          <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">Sin audio</button>
         </div>
       </div>
       <div class="config-grid">
         <div class="config-card">
-          <div class="config-label">🔴 Trabajo</div>
+          <div class="config-label">Trabajo</div>
           <div class="config-val" id="cfg-work-val">30s</div>
           <div class="stepper">
-            <button class="step-btn" onclick="adj('work',-5)">−</button>
+            <button class="step-btn" onclick="adj('work',-5)">&#8722;</button>
             <div class="step-display" id="cfg-work">30</div>
             <button class="step-btn" onclick="adj('work',5)">+</button>
           </div>
         </div>
         <div class="config-card">
-          <div class="config-label">🔵 Descanso</div>
+          <div class="config-label">Descanso</div>
           <div class="config-val" id="cfg-rest-val">15s</div>
           <div class="stepper">
-            <button class="step-btn" onclick="adj('rest',-5)">−</button>
+            <button class="step-btn" onclick="adj('rest',-5)">&#8722;</button>
             <div class="step-display" id="cfg-rest">15</div>
             <button class="step-btn" onclick="adj('rest',5)">+</button>
           </div>
         </div>
         <div class="config-card">
-          <div class="config-label">🔁 Ejercicios</div>
+          <div class="config-label">Ejercicios</div>
           <div class="config-val" id="cfg-rounds-val">5x</div>
           <div class="stepper">
-            <button class="step-btn" onclick="adj('rounds',-1)">−</button>
+            <button class="step-btn" onclick="adj('rounds',-1)">&#8722;</button>
             <div class="step-display" id="cfg-rounds">5</div>
             <button class="step-btn" onclick="adj('rounds',1)">+</button>
           </div>
         </div>
         <div class="config-card">
-          <div class="config-label">⏸ Pausa ejercicios</div>
+          <div class="config-label">Pausa ejercicios</div>
           <div class="config-val" id="cfg-pause-val">60s</div>
           <div class="stepper">
-            <button class="step-btn" onclick="adj('pause',-5)">−</button>
+            <button class="step-btn" onclick="adj('pause',-5)">&#8722;</button>
             <div class="step-display" id="cfg-pause">60</div>
             <button class="step-btn" onclick="adj('pause',5)">+</button>
           </div>
         </div>
       </div>
-      <div class="exercises-card">
-        <div class="config-label">📋 Repeticiones por ejercicio</div>
+      <div class="reps-card">
+        <div class="config-label">Repeticiones por ejercicio</div>
         <div class="stepper">
-          <button class="step-btn" onclick="adj('series',-1)">−</button>
+          <button class="step-btn" onclick="adj('series',-1)">&#8722;</button>
           <div class="step-display" id="cfg-series">3</div>
           <button class="step-btn" onclick="adj('series',1)">+</button>
-          <span style="font-size:13px;color:var(--text2);margin-left:8px">repeticiones / ejercicio</span>
+          <span style="font-size:13px;color:var(--text2);margin-left:8px">rep / ejercicio</span>
         </div>
       </div>
-      <button class="btn primary" style="width:100%;justify-content:center;margin-top:6px" onclick="startTimer()">▶ Iniciar sesión</button>
+      <button class="btn primary" style="width:100%;justify-content:center;margin-top:6px" onclick="startTimer()">&#9654; Iniciar sesion</button>
     </div>
 
-    <!-- ══════ LOG ══════ -->
+    <!-- LOG -->
     <div id="section-log" class="section">
-      <div class="section-title">Nueva sesión</div>
+      <div class="sec-title">Nueva sesion</div>
       <div class="form-row">
-        <label class="form-label">Tipo de sesión</label>
+        <label class="form-label">Tipo</label>
         <div class="chip-row">
-          <div class="chip active" onclick="setType('competition',this)">🏆 Competencia</div>
-          <div class="chip" onclick="setType('training',this)">🎯 Entrenamiento</div>
+          <div class="chip active" onclick="setType('competition',this)">Competencia</div>
+          <div class="chip" onclick="setType('training',this)">Entrenamiento</div>
         </div>
       </div>
       <div class="form-row">
@@ -289,36 +255,36 @@ textarea{resize:vertical;min-height:60px}
           <input type="date" id="log-date">
         </div>
         <div class="form-row">
-          <label class="form-label">Lugar / Competencia</label>
+          <label class="form-label">Lugar</label>
           <input type="text" id="log-place" placeholder="Copa Nacional...">
         </div>
       </div>
-      <div class="section-title" style="margin-top:.5rem">Ingreso de puntajes</div>
+      <div class="sec-title" style="margin-top:.5rem">Puntajes</div>
       <div id="shot-entry"></div>
       <div class="total-bar">
         <div>
-          <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total calificación</div>
+          <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total</div>
           <div style="font-size:12px;color:var(--text3);margin-top:3px" id="max-possible"></div>
         </div>
         <div class="total-score" id="total-score">0.0</div>
       </div>
       <div class="form-row">
-        <label class="form-label">Condiciones / Notas</label>
-        <textarea id="log-notes" placeholder="Viento, luz, equipo, sensaciones del disparo..."></textarea>
+        <label class="form-label">Notas</label>
+        <textarea id="log-notes" placeholder="Viento, luz, equipo..."></textarea>
       </div>
-      <button class="btn primary" style="width:100%;justify-content:center" onclick="saveRecord()">💾 Guardar sesión</button>
+      <button class="btn primary" style="width:100%;justify-content:center" onclick="saveRecord()">Guardar sesion</button>
     </div>
 
-    <!-- ══════ HISTORY ══════ -->
+    <!-- HISTORY -->
     <div id="section-history" class="section">
       <div class="stat-grid" id="stat-grid"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-        <div class="section-title" style="margin:0">Sesiones</div>
+        <div class="sec-title" style="margin:0">Sesiones</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn" onclick="exportCSV()" style="padding:6px 12px;font-size:12px">📥 CSV</button>
-          <button class="btn" onclick="exportJSON()" style="padding:6px 12px;font-size:12px">💾 JSON</button>
-          <label class="btn" style="padding:6px 12px;font-size:12px;cursor:pointer">📤 Importar<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
-          <button class="btn danger" onclick="clearAllRecords()" style="padding:6px 12px;font-size:12px">🗑</button>
+          <button class="btn" onclick="exportCSV()" style="padding:6px 12px;font-size:12px">CSV</button>
+          <button class="btn" onclick="exportJSON()" style="padding:6px 12px;font-size:12px">JSON</button>
+          <label class="btn" style="padding:6px 12px;font-size:12px;cursor:pointer">Importar<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+          <button class="btn danger" onclick="clearAllRecords()" style="padding:6px 12px;font-size:12px">Borrar todo</button>
         </div>
       </div>
       <div class="chip-row" style="margin-bottom:12px">
@@ -329,50 +295,43 @@ textarea{resize:vertical;min-height:60px}
       <div id="history-list" class="records-list"></div>
     </div>
 
-  </div><!-- end scroll-area -->
+  </div><!-- scroll-area -->
 
-  <!-- ══════ BOTTOM NAV ══════ -->
   <nav class="bottom-nav">
     <button class="tab-item active" data-tab="home" onclick="switchTab('home')">
-      <div class="tab-icon">⏱</div>
-      <div>Home</div>
+      <div class="ti">&#9200;</div><div>Home</div>
     </button>
     <button class="tab-item" data-tab="config" onclick="switchTab('config')">
-      <div class="tab-icon">⚙️</div>
-      <div>Config</div>
+      <div class="ti">&#9881;</div><div>Config</div>
     </button>
     <button class="tab-item" data-tab="log" onclick="switchTab('log')">
-      <div class="tab-icon">📋</div>
-      <div>Registrar</div>
+      <div class="ti">&#128203;</div><div>Registrar</div>
     </button>
     <button class="tab-item" data-tab="history" onclick="switchTab('history')">
-      <div class="tab-icon">📊</div>
-      <div>Historial</div>
+      <div class="ti">&#128202;</div><div>Historial</div>
     </button>
   </nav>
 </div>
-
 <script>
-
 // ============================================================
-//  AUDIO ENGINE
+// AUDIO
 // ============================================================
-let audioMode = 'voice'; // 'voice' | 'beep' | 'off'
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let actx = null;
+var audioMode = 'voice';
+var actx = null;
 
 function getACtx() {
-  if (!actx) actx = new AudioCtx();
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
   if (actx.state === 'suspended') actx.resume();
   return actx;
 }
 
-function beep(freq, dur, type='sine', vol=0.4, delay=0) {
+function beep(freq, dur, type, vol, delay) {
   if (audioMode === 'off') return;
+  type = type || 'sine'; vol = vol || 0.4; delay = delay || 0;
   try {
-    const ctx = getACtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    var ctx = getACtx();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
@@ -381,307 +340,254 @@ function beep(freq, dur, type='sine', vol=0.4, delay=0) {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
     osc.start(ctx.currentTime + delay);
     osc.stop(ctx.currentTime + delay + dur + 0.05);
-  } catch(e){}
+  } catch(e) {}
 }
 
-// --- Text-to-speech -----------------------------------
-let ttsQueue = [];
-let ttsSpeaking = false;
+// -- TTS --
+var ttsQueue = [];
+var ttsBusy = false;
 
-function speak(text, priority=false) {
+function speak(text, priority) {
   if (audioMode !== 'voice') return;
-  if (!window.speechSynthesis) { fallbackBeepForPhase(text); return; }
-  if (priority) {
-    window.speechSynthesis.cancel();
-    ttsQueue = [];
-    ttsSpeaking = false;
-  }
+  if (!window.speechSynthesis) { beep(600, 0.12, 'square', 0.35); return; }
+  if (priority) { window.speechSynthesis.cancel(); ttsQueue = []; ttsBusy = false; }
   ttsQueue.push(text);
-  if (!ttsSpeaking) processQueue();
+  if (!ttsBusy) runTTS();
 }
 
-function processQueue() {
-  if (!ttsQueue.length) { ttsSpeaking = false; return; }
-  ttsSpeaking = true;
-  const text = ttsQueue.shift();
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'es-ES';
-  utt.rate = 1.1;
-  utt.pitch = 1.0;
-  utt.volume = 1.0;
-  // prefer a Spanish voice if available
-  const voices = window.speechSynthesis.getVoices();
-  const esVoice = voices.find(v => v.lang.startsWith('es'));
-  if (esVoice) utt.voice = esVoice;
-  utt.onend = () => { ttsSpeaking = false; processQueue(); };
-  utt.onerror = () => { ttsSpeaking = false; processQueue(); };
-  window.speechSynthesis.speak(utt);
+function runTTS() {
+  if (!ttsQueue.length) { ttsBusy = false; return; }
+  ttsBusy = true;
+  var u = new SpeechSynthesisUtterance(ttsQueue.shift());
+  u.lang = 'es-ES'; u.rate = 1.1; u.pitch = 1.0; u.volume = 1.0;
+  var voices = window.speechSynthesis.getVoices();
+  var esv = voices.find(function(v){ return v.lang.startsWith('es'); });
+  if (esv) u.voice = esv;
+  u.onend = function(){ ttsBusy = false; runTTS(); };
+  u.onerror = function(){ ttsBusy = false; runTTS(); };
+  window.speechSynthesis.speak(u);
 }
-
-function fallbackBeepForPhase(text) {
-  if (text.includes('Trabajo')) beep(880, .15, 'square', .3);
-  else if (text.includes('Descanso')) beep(520, .2, 'sine', .3);
-  else if (text.includes('Pausa')) beep(500, .15, 'triangle', .3);
-  else if (text.includes('tres') || text === '3') beep(600, .12, 'square', .35);
-  else if (text.includes('dos') || text === '2') beep(600, .12, 'square', .35);
-  else if (text.includes('uno') || text === '1') beep(600, .12, 'square', .35);
-}
-
-// Phase name -> spoken text
-const PHASE_VOICE = {
-  work: 'Trabajo',
-  rest: 'Descanso',
-  prep: 'Pausa de ejercicio'
-};
 
 function announcePhase(phase) {
   if (audioMode === 'off') return;
+  var labels = { work: 'Trabajo', rest: 'Descanso', prep: 'Pausa de ejercicio' };
   if (audioMode === 'voice') {
-    speak(PHASE_VOICE[phase] || phase, true);
+    speak(labels[phase] || phase, true);
   } else {
-    // beep mode: distinct sound per phase
     if (phase === 'work') { beep(880,.18,'square',.4,0); beep(1100,.22,'square',.3,.1); beep(1320,.35,'square',.25,.2); }
     else if (phase === 'rest') { beep(660,.2,'sine',.35,0); beep(520,.25,'sine',.3,.15); beep(440,.4,'sine',.2,.3); }
-    else if (phase === 'prep') { beep(500,.15,'triangle',.35,0); beep(500,.15,'triangle',.3,.25); }
+    else { beep(500,.15,'triangle',.35,0); beep(500,.15,'triangle',.3,.25); }
   }
 }
 
 function playHalfTime() {
   if (audioMode === 'off') return;
-  if (audioMode === 'voice') {
-    speak('Mitad', true);
-  } else {
-    beep(750, .12, 'triangle', .4, 0);
-    beep(750, .12, 'triangle', .35, .2);
-  }
+  if (audioMode === 'voice') speak('Mitad', true);
+  else { beep(750,.12,'triangle',.4,0); beep(750,.12,'triangle',.35,.2); }
 }
 
 function playDone() {
   if (audioMode === 'off') return;
-  if (audioMode === 'voice') {
-    speak('Sesion completada. Excelente trabajo!', true);
-  } else {
-    [523,659,784,1047].forEach((f,i) => beep(f,.3,'square',.3,i*.12));
-  }
+  if (audioMode === 'voice') speak('Sesion completada. Excelente trabajo!', true);
+  else { [523,659,784,1047].forEach(function(f,i){ beep(f,.3,'square',.3,i*.12); }); }
 }
 
-// --- Spoken countdown 3,2,1 --------------------------
-let cdTimers = [];
+// -- Spoken countdown 3,2,1 --
+var cdTimers = [];
 
-function cancelAllCD() {
-  cdTimers.forEach(t => clearTimeout(t));
+function cancelCD() {
+  cdTimers.forEach(function(t){ clearTimeout(t); });
   cdTimers = [];
   if (window.speechSynthesis) window.speechSynthesis.cancel();
-  ttsSpeaking = false; ttsQueue = [];
+  ttsBusy = false; ttsQueue = [];
 }
 
 function spokenCountdown(cb) {
-  // speaks "tres... dos... uno..." then calls cb
   if (audioMode === 'off') { cb(); return; }
-  cancelAllCD();
-  const words = audioMode === 'voice' ? ['Tres','Dos','Uno'] : [null,null,null];
-  [0,900,1800].forEach((delay, i) => {
-    cdTimers.push(setTimeout(() => {
+  cancelCD();
+  var words = ['Tres', 'Dos', 'Uno'];
+  [0, 900, 1800].forEach(function(delay, i) {
+    cdTimers.push(setTimeout(function(){
       if (audioMode === 'voice') speak(words[i], true);
       else beep(600 + i*60, .12, 'square', .4);
     }, delay));
   });
-  cdTimers.push(setTimeout(() => { cb(); }, 2600));
+  cdTimers.push(setTimeout(cb, 2600));
 }
 
 function setAudioMode(mode, el) {
   audioMode = mode;
-  document.querySelectorAll('.tgl-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tgl-btn').forEach(function(b){ b.classList.remove('active'); });
   el.classList.add('active');
   if (mode !== 'off') getACtx();
 }
 
 // ============================================================
-//  TIMER STATE
+// TIMER STATE
 // ============================================================
-let cfg = {work:30, rest:15, rounds:5, pause:60, series:3};
-let mainTimer = null;
-let phase = 'work';
-let curRound = 1, curSeries = 1;
-let timeLeft = 30, totalTime = 30;
-let running = false, paused = false;
-let halfNotified = false;
-let endingCDActive = false;  // true while 3-sec end countdown is running
-
+var cfg = { work:30, rest:15, rounds:5, pause:60, series:3 };
+var mainTimer = null;
+var phase = 'work';
+var curRound = 1, curSeries = 1;
+var timeLeft = 30, totalTime = 30;
+var running = false, paused = false;
+var halfNotified = false, endingCD = false;
 
 function adj(k, d) {
-  const lim = {work:[5,300,5],rest:[0,300,5],rounds:[1,25,1],pause:[0,300,5],series:[1,60,1]};
-  const [mn,mx] = lim[k];
-  cfg[k] = Math.max(mn, Math.min(mx, cfg[k]+d));
-  document.getElementById('cfg-'+k).textContent = cfg[k];
-  const sfx = k==='rounds'?'x':'s';
-  document.getElementById('cfg-'+k+'-val').textContent = cfg[k] + sfx;
-  if (k==='series') renderSeriesList();
-  if (!running && !paused) {
-    if (k==='work') { timeLeft=cfg.work; totalTime=cfg.work; updateDisplay(); }
-    updateRoundInfo();
-  }
+  var lim = { work:[5,300,5], rest:[0,300,5], rounds:[1,25,1], pause:[0,300,5], series:[1,60,1] };
+  var mn = lim[k][0], mx = lim[k][1];
+  cfg[k] = Math.max(mn, Math.min(mx, cfg[k] + d));
+  var el = document.getElementById('cfg-' + k);
+  if (el) el.textContent = cfg[k];
+  var vel = document.getElementById('cfg-' + k + '-val');
+  if (vel) vel.textContent = cfg[k] + (k === 'rounds' ? 'x' : 's');
+  if (!running && !paused && k === 'work') { timeLeft = cfg.work; totalTime = cfg.work; updateDisplay(); }
+  if (!running && !paused) updateRoundInfo();
 }
 
-function renderSeriesList() {
-  const el = document.getElementById('exercises-list');
-  let html = '';
-  for (let i=0; i<cfg.series; i++) {
-    const active = running && i===(curSeries-1);
-    html += `<div class="ex-item${active?' active':''}" title="Rep ${i+1}">${i+1}</div>`;
+function renderReps() {
+  var el = document.getElementById('reps-grid');
+  if (!el) return;
+  var html = '';
+  for (var i = 0; i < cfg.series; i++) {
+    var active = running && i === (curSeries - 1);
+    html += '<div class="rep-chip' + (active ? ' active' : '') + '">' + (i+1) + '</div>';
   }
   el.innerHTML = html;
 }
 
 function updateDisplay() {
-  const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
-  const s = (timeLeft%60).toString().padStart(2,'0');
-  const td = document.getElementById('time-display');
-  td.textContent = `${m}:${s}`;
-  td.className = 'time-big ' + phase;
-  document.getElementById('timer-glow').className = 'timer-glow ' + phase;
-  const pct = totalTime>0 ? (timeLeft/totalTime)*100 : 0;
-  const pf = document.getElementById('progress-fill');
-  pf.style.width = pct+'%';
-  pf.className = 'progress-fill ' + phase;
+  var m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  var s = (timeLeft % 60).toString().padStart(2, '0');
+  var td = document.getElementById('time-display');
+  if (td) { td.textContent = m + ':' + s; td.className = 'time-big ' + phase; }
+  var glow = document.getElementById('tglow');
+  if (glow) glow.className = 'tglow ' + phase;
+  var pct = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0;
+  var pf = document.getElementById('progress-fill');
+  if (pf) { pf.style.width = pct + '%'; pf.className = 'progress-fill ' + phase; }
   updateRoundInfo();
 }
 
 function updateRoundInfo() {
-  document.getElementById('round-info').textContent =
-    `Ejercicio ${curRound} / ${cfg.rounds} - Rep ${curSeries} / ${cfg.series}`;
+  var el = document.getElementById('round-info');
+  if (el) el.textContent = 'Ejercicio ' + curRound + ' / ' + cfg.rounds + ' - Repeticion ' + curSeries + ' / ' + cfg.series;
 }
 
 function setPhaseBadge(txt, cls) {
-  const b = document.getElementById('phase-badge');
-  b.textContent = txt;
-  b.className = 'phase-badge ' + cls;
+  var b = document.getElementById('phase-badge');
+  if (b) { b.textContent = txt; b.className = 'phase-badge ' + cls; }
+}
+
+function showRunningState() {
+  var idle = document.getElementById('idle-state');
+  var run = document.getElementById('running-state');
+  if (idle) idle.style.display = 'none';
+  if (run) run.style.display = 'flex';
+}
+
+function showIdleState() {
+  var idle = document.getElementById('idle-state');
+  var run = document.getElementById('running-state');
+  if (run) run.style.display = 'none';
+  if (idle) idle.style.display = 'flex';
+  var pb = document.getElementById('pause-btn');
+  if (pb) { pb.textContent = 'Pausa'; pb.onclick = pauseTimer; }
 }
 
 // ============================================================
-//  TIMER CORE
+// TIMER LOGIC
 // ============================================================
 function startTimer() {
   getACtx();
-  if (paused) {
-    paused = false;
-    document.getElementById('pause-btn').innerHTML = '|| Pausa';
-      beginPhase(phase, false); // resume -- no re-announce
-    return;
-  }
   running = true; paused = false;
   phase = 'work'; curRound = 1; curSeries = 1;
   timeLeft = cfg.work; totalTime = cfg.work;
-  halfNotified = false; endingCDActive = false;
+  halfNotified = false; endingCD = false;
   showRunningState();
   switchTab('home');
-  renderSeriesList();
+  renderReps();
   beginPhase('work', true);
 }
 
 function beginPhase(p, announce) {
-  phase = p;
-  endingCDActive = false;
-  halfNotified = false;
+  phase = p; endingCD = false; halfNotified = false;
   clearTimeout(mainTimer);
+  var labels = { work: 'TRABAJO', rest: 'DESCANSO', prep: 'PAUSA EJERCICIO' };
+  setPhaseBadge(labels[p] || p, p);
   if (announce) {
     announcePhase(p);
-    setTimeout(() => { updateDisplay(); renderSeriesList(); tick(); }, 300);
+    setTimeout(function(){ updateDisplay(); renderReps(); tick(); }, 300);
   } else {
-    updateDisplay(); renderSeriesList(); tick();
+    updateDisplay(); renderReps(); tick();
   }
-  // set badge
-  const badges = {work:'TRABAJO', rest:'DESCANSO', prep:'PAUSA EJERCICIO'};
-  const badgeCls = {work:'work', rest:'rest', prep:'prep'};
-  setPhaseBadge(badges[p]||p, badgeCls[p]||'idle');
 }
 
 function tick() {
   if (!running || paused) { clearTimeout(mainTimer); return; }
-  mainTimer = setTimeout(() => {
+  mainTimer = setTimeout(function() {
     timeLeft--;
-
-    // Half-time notification (only for work phase)
-    const half = Math.floor(totalTime / 2);
+    // Half-time alert (work phase only)
+    var half = Math.floor(totalTime / 2);
     if (phase === 'work' && !halfNotified && timeLeft === half) {
       halfNotified = true;
       playHalfTime();
-      // Visual flash
-      const td = document.getElementById('timer-display');
-      const flash = document.createElement('div');
-      flash.className = 'halftime-flash';
-      td.appendChild(flash);
-      setTimeout(() => flash.remove(), 900);
+      var box = document.getElementById('timer-box');
+      if (box) {
+        var flash = document.createElement('div');
+        flash.className = 'halftime-flash';
+        box.appendChild(flash);
+        setTimeout(function(){ if (flash.parentNode) flash.parentNode.removeChild(flash); }, 900);
+      }
     }
-
-    // 3-second ending countdown trigger
-    if (!endingCDActive && timeLeft === 3 && timeLeft > 0) {
-      endingCDActive = true;
+    // 3-sec ending countdown
+    if (!endingCD && timeLeft === 3) {
+      endingCD = true;
       updateDisplay();
-      spokenCountdown(() => {
-        endingCDActive = false;
-        // timeLeft should be ~0 by now, advance
+      spokenCountdown(function() {
+        endingCD = false;
         timeLeft = 0;
         updateDisplay();
         advancePhase();
       });
-      return; // stop normal ticking -- countdown handles the rest
-    }
-
-    if (timeLeft <= 0) {
-      advancePhase();
       return;
     }
-
+    if (timeLeft <= 0) { advancePhase(); return; }
     updateDisplay();
     tick();
   }, 1000);
 }
 
 function advancePhase() {
-  cancelAllCD();
-  endingCDActive = false;
-  clearTimeout(mainTimer);
-
+  cancelCD(); endingCD = false; clearTimeout(mainTimer);
   if (phase === 'work') {
-    // After work: go to rest (if configured), else count the round done
     if (cfg.rest > 0) {
       timeLeft = cfg.rest; totalTime = cfg.rest;
       beginPhase('rest', true);
     } else {
       finishRound();
     }
-
   } else if (phase === 'rest') {
-    // After rest: round is complete
     finishRound();
-
   } else if (phase === 'prep') {
-    // After pause-ejercicio: start next exercise
     startNextExercise();
   }
 }
 
-// Called when one work+rest cycle (1 round) finishes
 function finishRound() {
   if (curSeries < cfg.series) {
-    // More rounds within this exercise -> keep going
     curSeries++;
     timeLeft = cfg.work; totalTime = cfg.work;
     beginPhase('work', true);
-  } else {
-    // All rounds of this exercise done -> check if more exercises remain
-    if (curRound < cfg.rounds) {
-      // Enter pausa-ejercicio (or go directly if pause=0)
-      if (cfg.pause > 0) {
-        timeLeft = cfg.pause; totalTime = cfg.pause;
-        beginPhase('prep', true);
-      } else {
-        startNextExercise();
-      }
+  } else if (curRound < cfg.rounds) {
+    if (cfg.pause > 0) {
+      timeLeft = cfg.pause; totalTime = cfg.pause;
+      beginPhase('prep', true);
     } else {
-      doneTimer();
+      startNextExercise();
     }
+  } else {
+    doneTimer();
   }
 }
 
@@ -694,154 +600,164 @@ function startNextExercise() {
 function doneTimer() {
   running = false; clearTimeout(mainTimer);
   playDone();
-  setPhaseBadge('[OK] ¡Sesión completada!', 'done');
-  const td = document.getElementById('time-display');
-  td.textContent = '00:00';
-  td.className = 'time-big';
-  document.getElementById('timer-glow').className = 'timer-glow idle';
-  document.getElementById('pause-btn').innerHTML = '|| Pausa';
-  renderSeriesList();
-  setTimeout(() => { showIdleState(); }, 2200);
+  setPhaseBadge('Sesion completada!', 'done');
+  var td = document.getElementById('time-display');
+  if (td) { td.textContent = '00:00'; td.className = 'time-big'; }
+  var glow = document.getElementById('tglow');
+  if (glow) glow.className = 'tglow';
+  renderReps();
+  setTimeout(showIdleState, 2500);
 }
 
 function pauseTimer() {
   if (!running) return;
-  paused = !paused;
-  if (paused) {
-    clearTimeout(mainTimer);
-    cancelAllCD();
-    endingCDActive = false;
-    document.getElementById('pause-btn').innerHTML = '  Reanudar';
-    document.getElementById('pause-btn').onclick = resumeTimer;
-    setPhaseBadge('|| Pausado', 'idle');
-  }
+  paused = true;
+  clearTimeout(mainTimer); cancelCD(); endingCD = false;
+  setPhaseBadge('Pausado', 'idle');
+  var pb = document.getElementById('pause-btn');
+  if (pb) { pb.textContent = 'Reanudar'; pb.onclick = resumeTimer; }
 }
 
 function resumeTimer() {
   if (!paused) return;
   paused = false;
-  document.getElementById('pause-btn').innerHTML = '|| Pausa';
-  document.getElementById('pause-btn').onclick = pauseTimer;
-  const badges = {work:'TRABAJO', rest:'DESCANSO', prep:'PAUSA EJERCICIO'};
-  const badgeCls = {work:'work', rest:'rest', prep:'prep'};
-  setPhaseBadge(badges[phase]||phase, badgeCls[phase]||'idle');
+  var pb = document.getElementById('pause-btn');
+  if (pb) { pb.textContent = 'Pausa'; pb.onclick = pauseTimer; }
+  var labels = { work: 'TRABAJO', rest: 'DESCANSO', prep: 'PAUSA EJERCICIO' };
+  setPhaseBadge(labels[phase] || phase, phase);
   tick();
 }
 
 function resetTimer() {
-  clearTimeout(mainTimer); cancelAllCD();
-  running = false; paused = false; endingCDActive = false;
+  clearTimeout(mainTimer); cancelCD();
+  running = false; paused = false; endingCD = false;
   phase = 'work'; curRound = 1; curSeries = 1;
-  timeLeft = cfg.work; totalTime = cfg.work;
-  halfNotified = false;
-  document.getElementById('pause-btn').innerHTML = '|| Pausa';
-  document.getElementById('pause-btn').onclick = pauseTimer;
-  setPhaseBadge('Listo para iniciar', 'idle');
-  document.getElementById('timer-glow').className = 'timer-glow idle';
-  updateDisplay(); renderSeriesList();
+  timeLeft = cfg.work; totalTime = cfg.work; halfNotified = false;
+  var pb = document.getElementById('pause-btn');
+  if (pb) { pb.textContent = 'Pausa'; pb.onclick = pauseTimer; }
+  setPhaseBadge('Listo', 'idle');
+  var glow = document.getElementById('tglow');
+  if (glow) glow.className = 'tglow idle';
+  updateDisplay(); renderReps();
   showIdleState();
 }
 
 // ============================================================
-//  SHOOTING LOG
+// TAB NAVIGATION
 // ============================================================
-const ISSF_EVENTS = [
-  {id:'ap10m',  name:'10m Pistola Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp - 75 min'},
-  {id:'ar10m',  name:'10m Carabina Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp - 75 min'},
-  {id:'rfp25m', name:'25m Pistola Fuego Rápido',   shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'60 disp - hit/miss'},
-  {id:'p25m',   name:'25m Pistola (Damas)',         shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'30+30 disp - 2 etapas'},
-  {id:'r3p50m', name:'50m Carabina 3 Posiciones',  shots:120, max:1264,  seriesCount:3,  shotsPerSeries:40, decimal:true,  desc:'3×40 disp - 2h45min', positions:['Rodilla (40)','Tendido (40)','Pie (40)']},
-  {id:'trap',   name:'Trap (Foso)',                 shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos - 5 series'},
-  {id:'skeet',  name:'Skeet',                       shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos - 5 series'},
+function switchTab(t) {
+  document.querySelectorAll('.tab-item').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === t);
+  });
+  document.querySelectorAll('.section').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  var sec = document.getElementById('section-' + t);
+  if (sec) sec.classList.add('active');
+  if (t === 'log') renderEventSelector();
+  if (t === 'history') renderHistory();
+}
+
+// ============================================================
+// SHOOTING LOG - ISSF EVENTS
+// ============================================================
+var ISSF_EVENTS = [
+  {id:'ap10m',  name:'10m Pistola Aire',         shots:60,  max:654,  seriesCount:6,  sps:10, decimal:true,  desc:'60 disp - 75 min'},
+  {id:'ar10m',  name:'10m Carabina Aire',         shots:60,  max:654,  seriesCount:6,  sps:10, decimal:true,  desc:'60 disp - 75 min'},
+  {id:'rfp25m', name:'25m Pistola Fuego Rapido',  shots:60,  max:600,  seriesCount:12, sps:5,  decimal:false, desc:'60 disp - hit/miss'},
+  {id:'p25m',   name:'25m Pistola Damas',         shots:60,  max:600,  seriesCount:12, sps:5,  decimal:false, desc:'30+30 disp'},
+  {id:'r3p50m', name:'50m Carabina 3 Posiciones', shots:120, max:1264, seriesCount:3,  sps:40, decimal:true,  desc:'3x40 disp', positions:['Rodilla (40)','Tendido (40)','Pie (40)']},
+  {id:'trap',   name:'Trap (Foso)',               shots:125, max:125,  seriesCount:5,  sps:25, decimal:false, desc:'125 platos'},
+  {id:'skeet',  name:'Skeet',                     shots:125, max:125,  seriesCount:5,  sps:25, decimal:false, desc:'125 platos'}
 ];
 
-let sessionType = 'competition';
-let selectedEvent = ISSF_EVENTS[0];
-let shotInputs = [];
-let records = (()=>{ try { const d=localStorage.getItem('ost_records'); return d?JSON.parse(d):[]; } catch(e){ return []; } })();
-let filterMode = 'all';
+var sessionType = 'competition';
+var selectedEvent = ISSF_EVENTS[0];
+var shotInputs = [];
+var records = (function(){
+  try { var d = localStorage.getItem('ost_records'); return d ? JSON.parse(d) : []; }
+  catch(e) { return []; }
+})();
+var filterMode = 'all';
 
 function setType(t, el) {
   sessionType = t;
-  document.querySelectorAll('#section-log .chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('#section-log .chip').forEach(function(c){ c.classList.remove('active'); });
   el.classList.add('active');
 }
 
 function renderEventSelector() {
-  document.getElementById('event-selector').innerHTML = ISSF_EVENTS.map(e =>
-    `<div class="event-card${selectedEvent&&selectedEvent.id===e.id?' selected':''}" onclick="selectEvent('${e.id}')">
-      <div class="ev-name">${e.name}</div>
-      <div class="ev-detail">${e.desc}</div>
-    </div>`
-  ).join('');
-  document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+  var c = document.getElementById('event-selector');
+  if (!c) return;
+  c.innerHTML = ISSF_EVENTS.map(function(e) {
+    var sel = selectedEvent && selectedEvent.id === e.id ? ' selected' : '';
+    return '<div class="event-card' + sel + '" onclick="selectEvent(\'' + e.id + '\')">'
+      + '<div class="ev-name">' + e.name + '</div>'
+      + '<div class="ev-detail">' + e.desc + '</div>'
+      + '</div>';
+  }).join('');
+  var ld = document.getElementById('log-date');
+  if (ld) ld.value = new Date().toISOString().split('T')[0];
   renderShotEntry();
 }
 
 function selectEvent(id) {
-  selectedEvent = ISSF_EVENTS.find(e=>e.id===id);
+  selectedEvent = ISSF_EVENTS.find(function(e){ return e.id === id; });
   renderEventSelector();
 }
 
 function renderShotEntry() {
-  const ev = selectedEvent; if (!ev) return;
+  var ev = selectedEvent; if (!ev) return;
   shotInputs = [];
-  let html = '<div class="shot-grid">';
-  for (let si=0; si<ev.seriesCount; si++) {
-    const lbl = ev.positions ? ev.positions[si] : `Serie ${si+1}`;
-    html += `<div class="series-block"><div class="series-lbl">${lbl} -- ${ev.shotsPerSeries} disparos</div><div class="shots-row">`;
-    for (let i=0; i<ev.shotsPerSeries; i++) {
-      const iid = `s${si}_d${i}`;
-      shotInputs.push({id:iid, decimal:ev.decimal});
-      if (ev.decimal) {
-        // decimal: 0.0   10.9
-        html += `<div class="shot-wrap">
-          <span class="shot-num">#${si*ev.shotsPerSeries+i+1}</span>
-          <input class="shot-input" type="number" id="${iid}"
-            min="0" max="10.9" step="0.1" placeholder="10.9"
-            oninput="validateShot(this,true)" onblur="formatShot(this,true)">
-        </div>`;
-      } else {
-        // hit/miss: 0 or 1
-        html += `<div class="shot-wrap">
-          <span class="shot-num">#${si*ev.shotsPerSeries+i+1}</span>
-          <input class="shot-input" type="number" id="${iid}"
-            min="0" max="1" step="1" placeholder="1"
-            oninput="validateShot(this,false)" onblur="formatShot(this,false)">
-        </div>`;
-      }
+  var html = '<div class="shot-grid">';
+  for (var si = 0; si < ev.seriesCount; si++) {
+    var lbl = ev.positions ? ev.positions[si] : ('Serie ' + (si+1));
+    html += '<div class="series-block"><div class="series-lbl">' + lbl + ' - ' + ev.sps + ' disparos</div><div class="shots-row">';
+    for (var i = 0; i < ev.sps; i++) {
+      var iid = 's' + si + '_d' + i;
+      shotInputs.push({ id: iid, decimal: ev.decimal });
+      html += '<div class="shot-wrap">'
+        + '<span class="shot-num">#' + (si * ev.sps + i + 1) + '</span>'
+        + '<input class="shot-input" type="number" id="' + iid + '"'
+        + ' min="0" max="' + (ev.decimal ? '10.9' : '1') + '"'
+        + ' step="' + (ev.decimal ? '0.1' : '1') + '"'
+        + ' placeholder="' + (ev.decimal ? '10.9' : '1') + '"'
+        + ' oninput="validateShot(this,' + ev.decimal + ')"'
+        + ' onblur="formatShot(this,' + ev.decimal + ')">'
+        + '</div>';
     }
     html += '</div></div>';
   }
   html += '</div>';
   if (ev.decimal) {
-    html += `<div class="inner10-hint">* Decimal ISSF: 0.0   10.9 por disparo. Inner Ten = <strong>10.9</strong>. Máximo: <strong>${ev.max} pts</strong></div>`;
+    html += '<div class="hint-box">Decimal ISSF: 0.0 a 10.9 por disparo. Inner Ten = 10.9. Max: ' + ev.max + ' pts</div>';
   } else {
-    html += `<div class="inner10-hint">OK Hit = 1 - Miss = 0. Máximo: <strong>${ev.max} pts</strong></div>`;
+    html += '<div class="hint-box">Hit = 1, Miss = 0. Max: ' + ev.max + ' pts</div>';
   }
-  document.getElementById('shot-entry').innerHTML = html;
-  document.getElementById('max-possible').textContent = `Máximo posible: ${ev.max} pts`;
+  var se = document.getElementById('shot-entry');
+  if (se) se.innerHTML = html;
+  var mp = document.getElementById('max-possible');
+  if (mp) mp.textContent = 'Max: ' + ev.max + ' pts';
   calcTotal();
 }
 
 function validateShot(el, decimal) {
-  let v = parseFloat(el.value);
-  if (isNaN(v)) { el.classList.remove('inner10','invalid'); calcTotal(); return; }
+  var v = parseFloat(el.value);
+  if (isNaN(v)) { el.classList.remove('inner10'); calcTotal(); return; }
   if (decimal) {
     if (v > 10.9) { el.value = '10.9'; v = 10.9; }
     if (v < 0)   { el.value = '0.0';  v = 0; }
     el.classList.toggle('inner10', v === 10.9);
-    el.classList.toggle('invalid', v > 10.9);
   } else {
     if (v > 1) { el.value = '1'; v = 1; }
     if (v < 0) { el.value = '0'; v = 0; }
-    el.classList.remove('inner10','invalid');
+    el.classList.remove('inner10');
   }
   calcTotal();
 }
 
 function formatShot(el, decimal) {
-  const v = parseFloat(el.value);
+  var v = parseFloat(el.value);
   if (!isNaN(v) && el.value !== '') {
     el.value = decimal ? v.toFixed(1) : v.toFixed(0);
   }
@@ -849,26 +765,26 @@ function formatShot(el, decimal) {
 }
 
 function calcTotal() {
-  let t = 0;
-  shotInputs.forEach(({id, decimal}) => {
-    const el = document.getElementById(id); if (!el) return;
-    const v = parseFloat(el.value||'0')||0;
-    t += decimal ? Math.min(10.9, Math.max(0, v)) : Math.min(1, Math.max(0, Math.round(v)));
+  var t = 0;
+  shotInputs.forEach(function(s) {
+    var el = document.getElementById(s.id); if (!el) return;
+    var v = parseFloat(el.value || '0') || 0;
+    t += s.decimal ? Math.min(10.9, Math.max(0, v)) : Math.min(1, Math.max(0, Math.round(v)));
   });
-  document.getElementById('total-score').textContent =
-    selectedEvent?.decimal ? t.toFixed(1) : t.toFixed(0);
+  var ts = document.getElementById('total-score');
+  if (ts) ts.textContent = selectedEvent && selectedEvent.decimal ? t.toFixed(1) : t.toFixed(0);
 }
 
 function saveRecord() {
   if (!selectedEvent) { alert('Selecciona una modalidad'); return; }
-  const total = parseFloat(document.getElementById('total-score').textContent)||0;
-  const shots = shotInputs.map(({id}) => parseFloat(document.getElementById(id)?.value||'0')||0);
+  var total = parseFloat(document.getElementById('total-score').textContent) || 0;
+  var shots = shotInputs.map(function(s){ return parseFloat(document.getElementById(s.id).value || '0') || 0; });
   records.unshift({
     id: Date.now(), type: sessionType,
     event: selectedEvent.id, eventName: selectedEvent.name,
     date: document.getElementById('log-date').value || new Date().toISOString().split('T')[0],
     place: document.getElementById('log-place').value || 'Sin especificar',
-    score: total, maxScore: selectedEvent.max, shots,
+    score: total, maxScore: selectedEvent.max, shots: shots,
     notes: document.getElementById('log-notes').value,
     decimal: selectedEvent.decimal
   });
@@ -878,255 +794,202 @@ function saveRecord() {
   switchTab('history');
 }
 
-function renderHistory() {
-  const filtered = filterMode==='all' ? records : records.filter(r=>r.type===filterMode);
-  const comps = records.filter(r=>r.type==='competition');
-  const bestScore = records.length ? Math.max(...records.map(r=>r.score)) : 0;
-  document.getElementById('stat-grid').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${records.length}</div><div class="stat-lbl">Total sesiones</div></div>
-    <div class="stat-card"><div class="stat-num">${comps.length}</div><div class="stat-lbl">Competencias</div></div>
-    <div class="stat-card"><div class="stat-num">${bestScore>0?bestScore.toFixed(1):'-'}</div><div class="stat-lbl">Mejor puntaje</div></div>
-  `;
-  const list = document.getElementById('history-list');
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty-state"> <br><br>Sin registros aún.<br>Registra tu primera sesión.</div>';
-    return;
-  }
-  list.innerHTML = filtered.map(r => {
-    const pct = r.maxScore ? Math.round((r.score/r.maxScore)*100) : 0;
-    return `<div class="record-card">
-      <div class="record-header">
-        <div>
-          <div class="record-event">${r.eventName}</div>
-          <div class="record-meta">${r.date} - ${r.place}</div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:8px">
-          <div>
-            <div class="record-score">${r.decimal?r.score.toFixed(1):r.score}</div>
-            <div class="record-pct">${pct}% del máx.</div>
-          </div>
-          <button class="del-btn" onclick="deleteRecord(${r.id})"> </button>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
-        <span class="badge ${r.type==='competition'?'comp':'train'}">${r.type==='competition'?'  Competencia':'  Entrenamiento'}</span>
-        ${r.notes?`<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${r.notes}</span>`:''}
-      </div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
-
-function filterHistory(mode, el) {
-  filterMode = mode;
-  document.querySelectorAll('#section-history .chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  renderHistory();
-}
-
-function deleteRecord(id) { if(!confirm('¿Eliminar esta sesión?')) return; records=records.filter(r=>r.id!==id); persistRecords(); renderHistory(); }
-
-function switchTab(t) {
-  document.querySelectorAll('.tab-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === t);
-  });
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('section-'+t).classList.add('active');
-  if (t==='log') renderEventSelector();
-  if (t==='history') renderHistory();
-  // When going to home, keep timer state visible
-  if (t==='home' && running) {
-    updateDisplay(); renderSeriesList();
-  }
-}
-
 // ============================================================
-//  PERSISTENCE -- localStorage
+// PERSISTENCE
 // ============================================================
 function persistRecords() {
   try { localStorage.setItem('ost_records', JSON.stringify(records)); } catch(e) {}
 }
 
 function clearAllRecords() {
-  if (!confirm('¿Borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
-  records = [];
-  persistRecords();
-  renderHistory();
+  if (!confirm('Borrar TODOS los registros? Esta accion no se puede deshacer.')) return;
+  records = []; persistRecords(); renderHistory();
 }
 
-// --- Export CSV --------------------------------------
 function exportCSV() {
-  if (!records.length) { alert('No hay registros para exportar.'); return; }
-  const header = ['ID','Tipo','Modalidad','Fecha','Lugar','Puntaje','Maximo','Porcentaje','Notas'];
-  const rows = records.map(r => [
-    r.id, r.type, r.eventName, r.date, `"${r.place}"`,
-    r.decimal ? r.score.toFixed(1) : r.score,
-    r.maxScore,
-    r.maxScore ? Math.round((r.score/r.maxScore)*100)+'%' : '-',
-    `"${(r.notes||'').replace(/"/g,"''")}"`
-  ]);
-  const csv = [header, ...rows].map(r => r.join(',')).join('
-');
-  const blob = new Blob([' '+csv], {type:'text/csv;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `shooting_trainer_${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  if (!records.length) { alert('No hay registros.'); return; }
+  var header = ['ID','Tipo','Modalidad','Fecha','Lugar','Puntaje','Maximo','Porcentaje','Notas'];
+  var rows = records.map(function(r) {
+    return [r.id, r.type, r.eventName, r.date, '"'+r.place+'"',
+      r.decimal ? r.score.toFixed(1) : r.score, r.maxScore,
+      r.maxScore ? Math.round((r.score/r.maxScore)*100)+'%' : '-',
+      '"'+(r.notes||'').replace(/"/g,"''")+'"'
+    ];
+  });
+  var csv = [header].concat(rows).map(function(r){ return r.join(','); }).join('\n');
+  var blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'shooting_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click(); URL.revokeObjectURL(url);
 }
 
-// --- Export JSON -------------------------------------
 function exportJSON() {
-  if (!records.length) { alert('No hay registros para exportar.'); return; }
-  const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `shooting_trainer_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  if (!records.length) { alert('No hay registros.'); return; }
+  var blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'shooting_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click(); URL.revokeObjectURL(url);
 }
 
-// --- Import JSON -------------------------------------
 function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
+  var file = event.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
     try {
-      const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported)) throw new Error('Formato inválido');
-      const existing = new Set(records.map(r=>r.id));
-      const newRecs = imported.filter(r => !existing.has(r.id));
-      records = [...records, ...newRecs].sort((a,b)=>b.id-a.id);
-      persistRecords();
-      renderHistory();
-      alert(`[OK] Importados ${newRecs.length} registros nuevos. (${imported.length - newRecs.length} ya existían)`);
-    } catch(err) {
-      alert('  Error al importar: el archivo no es válido.');
-    }
+      var imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Formato invalido');
+      var existing = new Set(records.map(function(r){ return r.id; }));
+      var newRecs = imported.filter(function(r){ return !existing.has(r.id); });
+      records = records.concat(newRecs).sort(function(a,b){ return b.id - a.id; });
+      persistRecords(); renderHistory();
+      alert('Importados ' + newRecs.length + ' registros nuevos.');
+    } catch(err) { alert('Error al importar el archivo.'); }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
 
 // ============================================================
-//  PWA -- Manifest + Service Worker (inline, no server needed)
+// HISTORY
 // ============================================================
-(function setupPWA() {
+function renderHistory() {
+  var filtered = filterMode === 'all' ? records : records.filter(function(r){ return r.type === filterMode; });
+  var comps = records.filter(function(r){ return r.type === 'competition'; });
+  var best = records.length ? Math.max.apply(null, records.map(function(r){ return r.score; })) : 0;
+  var sg = document.getElementById('stat-grid');
+  if (sg) sg.innerHTML =
+    '<div class="stat-card"><div class="stat-num">' + records.length + '</div><div class="stat-lbl">Sesiones</div></div>'
+    + '<div class="stat-card"><div class="stat-num">' + comps.length + '</div><div class="stat-lbl">Competencias</div></div>'
+    + '<div class="stat-card"><div class="stat-num">' + (best > 0 ? best.toFixed(1) : '-') + '</div><div class="stat-lbl">Mejor</div></div>';
+  var list = document.getElementById('history-list');
+  if (!list) return;
+  if (!filtered.length) { list.innerHTML = '<div class="empty-state">Sin registros aun.<br>Registra tu primera sesion.</div>'; return; }
+  list.innerHTML = filtered.map(function(r) {
+    var pct = r.maxScore ? Math.round((r.score / r.maxScore) * 100) : 0;
+    return '<div class="record-card">'
+      + '<div class="record-header"><div>'
+      + '<div class="record-event">' + r.eventName + '</div>'
+      + '<div class="record-meta">' + r.date + ' - ' + r.place + '</div>'
+      + '</div><div style="display:flex;align-items:flex-start;gap:8px">'
+      + '<div><div class="record-score">' + (r.decimal ? r.score.toFixed(1) : r.score) + '</div>'
+      + '<div class="record-pct">' + pct + '% del max</div></div>'
+      + '<button class="del-btn" onclick="deleteRecord(' + r.id + ')">X</button>'
+      + '</div></div>'
+      + '<div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">'
+      + '<span class="badge ' + (r.type === 'competition' ? 'comp' : 'train') + '">'
+      + (r.type === 'competition' ? 'Competencia' : 'Entrenamiento') + '</span>'
+      + (r.notes ? '<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">' + r.notes + '</span>' : '')
+      + '</div>'
+      + '<div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div>'
+      + '</div>';
+  }).join('');
+}
+
+function filterHistory(mode, el) {
+  filterMode = mode;
+  document.querySelectorAll('#section-history .chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  renderHistory();
+}
+
+function deleteRecord(id) {
+  if (!confirm('Eliminar esta sesion?')) return;
+  records = records.filter(function(r){ return r.id !== id; });
+  persistRecords(); renderHistory();
+}
+
+// ============================================================
+// PWA - self-contained, works on any subdirectory
+// ============================================================
+(function() {
   if (location.protocol !== 'https:') return;
+  var i192 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFe0lEQVR42u3dS3LbQAwFwLlBKiuvcmUdLVdKKhfIzyKJh9euws6WhgB6KFOc4TkP/nz5+vFDiF9xNv4orKgDoliiEoPCiEoICiEqIUi8qIUg2aIWgSSLWgSSKyoRSKiohiCRohaAJIpaBJInahFImqhFIFmiGoFEiVoAkiSqEUiQqAUgOaIagcSIWgCSIqoRSIgAQIhGAJIhqhFIhABACADEO+Lb99dlIb8A1DQ7FABoehgA0PBAAKDxQbgCgCTsbXoYABjX+L97v6fGAoDGv72x3vl3IADwWOO/8/1TjwWAssa/ahybjg+AZc1/x1g2Hy8AgY1/95jacgDA0OZ/alzN+QCgrNAT378RwtH8rzFjlCsAago6fSwtCE5r808cq/wBUFO4tLFthXA0PwDNCI7mB6AZwdne/Enjl2sAagqyYbwbEBzND0AzgqP5AWhGsA5A8rGoAwAVSU8HsKkeR7IBaK7LkeSOFWjqEwhgyxdc2xexJyOIBmAvoZdabQWQeDdn+4ZXiQiOjz77do5Tt+UANuwq8b+/k44AgMAEJu8Mp4ZBAKYl7spmu+Lvk3IHwPCkbdwaEYDBANKaf+I3wRAAEDOOu197cy7jAUzdqe3KcTzx+hPzCsAfkrS1SE++z6T81gN4ukBPvf/T79WQ43gAm99/0u7QzWeBY/af895txzsBwWmd/W2P3pdzAAYVYurlSQAUoWJJJAQAjLtXZkoNACi69OgBGa+qS7LjATTM/s0App0FagB4QkzGWQCAguafuC/QhHpUADD7AzAJwTH7i+azAAACgLaPP5p9/l2qAJj9nQUA2H/pM2WMACwBkL6h1qaPQQBceMCpews13SNUBaBt9k/f87PlLABASPNvXa8AAAAAALDn8/+W7c9b/g8AIKz5nz4WAEIBbJn9ty3cB2AJgI1PggFg0TeMAOT9IwwAAAA0fARKjIkAtucYAAAAAAAAAAAAAAAAAADAVSBXgVwFAgAAAHwTDIBvggFwLxAAALgb1N2gAFgPAIAVYVaEWREGAAAAAGBXCADsC2RfIJ//7QxnZzizv71B7Q1qb1AABACbAUz6GJQMYFM/PArAWcDsP6n5ARAAbAcwFYGnRJYCcBYAwIOynQU8KR6A+xPQ+GXTxJwA8NCXQADMnv1rADgLfFTd8zN19geg4G5L+R8KoL0IU9crNDV/LYAJxZi4ZHN7zqMAbC+I4wVg7Ez81McBeQagZmZquvQ4dfYfAWD67JS+Wm3yFisTbkocD2DSfj5JAKbvLwTA0ETdNY67X3tzLgEIPBvc9ZqT8whAOILPjOnq19L8ANy+ncmdAFL3FgIgMHFXNNs7/y4tX5P6bRyAyQm8+nle6RtqpTV/LIBUBJsenpFWtygACTOJxs+f/UcDSEpoc9MnN388gImJbWr65DpFAEhP7rtAqE8xgA1JTtgXqLUuR7IBaK7HkXQAmuuwDkBK8jeNGwAFqACwrfkjAWwpxNarWWm9FAlgQ0HSx7rlmQuxAP71GjsAXfmtAJBcpMTxbXzaTjyA1GJtubcpvXdWAEgsXPodrlt6ZhWAlBVT0wBsujepHkDyskG5AuDRuzCbAGy7KxWAsEJP3gGv6ZnK6wF85p78TQA2rkUA4MFdHRIAbF2EA8CCFVp3vq7mB+CytbsTAGxdawxA6CL2KwE0LLIHYPHWJn8DoG1LFQAKIdhLaAiAXz8SsR+DegJQCUH9AKgCoT4A1GFQBwBqUMgvAEIAIAQAQrwDAASiuvkBEABIiGgGAIGobn4ARD0ACER18wMg6gFAIKqbHwBRDwACUd38EIj65odA1Dc/BKK++QEQ9QBAENWND4HQ/BAIzQ+B0PwgCI0PgtD4IAiND4PIbfqfDWSvP1x6g70AAAAASUVORK5CYII=';
+  var i512 = 'data:image/png;base64,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';
+  // Apple touch icon
+  var al = document.createElement('link'); al.rel = 'apple-touch-icon'; al.href = i192; document.head.appendChild(al);
+  var fl = document.createElement('link'); fl.rel = 'icon'; fl.type = 'image/png'; fl.href = i192; document.head.appendChild(fl);
 
-  var ICON192 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFe0lEQVR42u3dS3LbQAwFwLlBKiuvcmUdLVdKKhfIzyKJh9euws6WhgB6KFOc4TkP/nz5+vFDiF9xNv4orKgDoliiEoPCiEoICiEqIUi8qIUg2aIWgSSLWgSSKyoRSKiohiCRohaAJIpaBJInahFImqhFIFmiGoFEiVoAkiSqEUiQqAUgOaIagcSIWgCSIqoRSIgAQIhGAJIhqhFIhABACADEO+Lb99dlIb8A1DQ7FABoehgA0PBAAKDxQbgCgCTsbXoYABjX+L97v6fGAoDGv72x3vl3IADwWOO/8/1TjwWAssa/ahybjg+AZc1/x1g2Hy8AgY1/95jacgDA0OZ/alzN+QCgrNAT378RwtH8rzFjlCsAago6fSwtCE5r808cq/wBUFO4tLFthXA0PwDNCI7mB6AZwdne/Enjl2sAagqyYbwbEBzND0AzgqP5AWhGsA5A8rGoAwAVSU8HsKkeR7IBaK7LkeSOFWjqEwhgyxdc2xexJyOIBmAvoZdabQWQeDdn+4ZXiQiOjz77do5Tt+UANuwq8b+/k44AgMAEJu8Mp4ZBAKYl7spmu+Lvk3IHwPCkbdwaEYDBANKaf+I3wRAAEDOOu197cy7jAUzdqe3KcTzx+hPzCsAfkrS1SE++z6T81gN4ukBPvf/T79WQ43gAm99/0u7QzWeBY/af895txzsBwWmd/W2P3pdzAAYVYurlSQAUoWJJJAQAjLtXZkoNACi69OgBGa+qS7LjATTM/s0App0FagB4QkzGWQCAguafuC/QhHpUADD7AzAJwTH7i+azAAACgLaPP5p9/l2qAJj9nQUA2H/pM2WMACwBkL6h1qaPQQBceMCpews13SNUBaBt9k/f87PlLABASPNvXa8AAAAAALDn8/+W7c9b/g8AIKz5nz4WAEIBbJn9ty3cB2AJgI1PggFg0TeMAOT9IwwAAAA0fARKjIkAtucYAAAAAAAAAAAAAAAAAADAVSBXgVwFAgAAAHwTDIBvggFwLxAAALgb1N2gAFgPAIAVYVaEWREGAAAAAGBXCADsC2RfIJ//7QxnZzizv71B7Q1qb1AABACbAUz6GJQMYFM/PArAWcDsP6n5ARAAbAcwFYGnRJYCcBYAwIOynQU8KR6A+xPQ+GXTxJwA8NCXQADMnv1rADgLfFTd8zN19geg4G5L+R8KoL0IU9crNDV/LYAJxZi4ZHN7zqMAbC+I4wVg7Ez81McBeQagZmZquvQ4dfYfAWD67JS+Wm3yFisTbkocD2DSfj5JAKbvLwTA0ETdNY67X3tzLgEIPBvc9ZqT8whAOILPjOnq19L8ANy+ncmdAFL3FgIgMHFXNNs7/y4tX5P6bRyAyQm8+nle6RtqpTV/LIBUBJsenpFWtygACTOJxs+f/UcDSEpoc9MnN388gImJbWr65DpFAEhP7rtAqE8xgA1JTtgXqLUuR7IBaK7HkXQAmuuwDkBK8jeNGwAFqACwrfkjAWwpxNarWWm9FAlgQ0HSx7rlmQuxAP71GjsAXfmtAJBcpMTxbXzaTjyA1GJtubcpvXdWAEgsXPodrlt6ZhWAlBVT0wBsujepHkDyskG5AuDRuzCbAGy7KxWAsEJP3gGv6ZnK6wF85p78TQA2rkUA4MFdHRIAbF2EA8CCFVp3vq7mB+CytbsTAGxdawxA6CL2KwE0LLIHYPHWJn8DoG1LFQAKIdhLaAiAXz8SsR+DegJQCUH9AKgCoT4A1GFQBwBqUMgvAEIAIAQAQrwDAASiuvkBEABIiGgGAIGobn4ARD0ACER18wMg6gFAIKqbHwBRDwACUd38EIj65odA1Dc/BKK++QEQ9QBAENWND4HQ/BAIzQ+B0PwgCI0PgtD4IAiND4PIbfqfDWSvP1x6g70AAAAASUVORK5CYII=';
-  var ICON512 = 'data:image/png;base64,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';
-
-  // Inject apple-touch-icon and favicon dynamically
-  var al = document.createElement('link'); al.rel='apple-touch-icon'; al.href=ICON192; document.head.appendChild(al);
-  var fl = document.createElement('link'); fl.rel='icon'; fl.type='image/png'; fl.href=ICON192; document.head.appendChild(fl);
-
-  // Build and inject manifest blob
+  // Manifest blob
   var manifest = {
-    name: 'Olympic Shooting Trainer',
-    short_name: 'Shooting',
-    description: 'Cronometro interval timer y registro ISSF para tiro olimpico',
-    start_url: location.pathname,
-    display: 'standalone',
-    background_color: '#0f1117',
-    theme_color: '#0f1117',
-    orientation: 'portrait-primary',
-    lang: 'es',
+    name: 'Olympic Shooting Trainer', short_name: 'Shooting',
+    description: 'Cronometro y registro ISSF tiro olimpico',
+    start_url: location.href, display: 'standalone',
+    background_color: '#0f1117', theme_color: '#0f1117',
+    orientation: 'portrait-primary', lang: 'es',
     icons: [
-      {src: ICON192, sizes:'192x192', type:'image/png', purpose:'any maskable'},
-      {src: ICON512, sizes:'512x512', type:'image/png', purpose:'any maskable'}
+      {src: i192, sizes: '192x192', type: 'image/png', purpose: 'any maskable'},
+      {src: i512, sizes: '512x512', type: 'image/png', purpose: 'any maskable'}
     ]
   };
-  var mblob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-  var murl  = URL.createObjectURL(mblob);
-  var ml = document.createElement('link'); ml.rel='manifest'; ml.href=murl; document.head.appendChild(ml);
+  var mblob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  var mlink = document.createElement('link'); mlink.rel = 'manifest'; mlink.href = URL.createObjectURL(mblob);
+  document.head.appendChild(mlink);
 
-  // Register SW via blob (works on any path/subdirectory)
+  // SW blob
+  var swCode = "const C='ost-v4';"
+    + "self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.add(self.registration.scope)).then(()=>self.skipWaiting()));});"
+    + "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});"
+    + "self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});";
+  var swBlob = new Blob([swCode], {type: 'application/javascript'});
   if ('serviceWorker' in navigator) {
-    var swCode = "const CACHE='ost-v3';\nself.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.add(self.registration.scope)).then(()=>self.skipWaiting()));});\nself.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});\nself.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(self.registration.scope))));});";
-    var swBlob = new Blob([swCode], {type:'application/javascript'});
-    var swUrl  = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl, {scope: './'})
-      .then(function(){ console.log('[PWA] SW registered'); })
-      .catch(function(e){ console.log('[PWA] SW error:', e); });
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob), {scope: './'});
   }
 
-  // Android install prompt
-  var deferredPrompt = null;
+  // Android install banner
+  var deferred = null;
   window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallBanner();
+    e.preventDefault(); deferred = e; showBanner();
   });
 
-  function showInstallBanner() {
-    if (document.getElementById('install-banner')) return;
-    var b = document.createElement('div');
-    b.id = 'install-banner';
-    b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2d3148;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:999;gap:10px;flex-wrap:wrap;max-width:680px;margin:0 auto;';
-    b.innerHTML = '<div style="font-size:13px;color:#e8eaf0;flex:1"><strong>Instalar app</strong> en tu dispositivo</div>'
+  function showBanner() {
+    if (document.getElementById('pwa-banner')) return;
+    var b = document.createElement('div'); b.id = 'pwa-banner';
+    b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2d3148;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:999;gap:10px;';
+    b.innerHTML = '<div style="font-size:13px;color:#e8eaf0"><strong>Instalar app</strong> en tu dispositivo</div>'
       + '<div style="display:flex;gap:8px">'
-      + '<button onclick="window._doInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Instalar</button>'
-      + '<button onclick="document.getElementById(\'install-banner\').remove()" style="padding:7px 12px;background:none;border:1px solid #3d4260;border-radius:8px;color:#8b90a8;font-size:13px;cursor:pointer;font-family:inherit">Ahora no</button>'
+      + '<button onclick="window._pwaInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer">Instalar</button>'
+      + '<button onclick="document.getElementById(\'pwa-banner\').remove()" style="padding:7px 12px;background:none;border:1px solid #3d4260;border-radius:8px;color:#8b90a8;font-size:13px;cursor:pointer">No</button>'
       + '</div>';
     document.body.appendChild(b);
   }
-
-  window._doInstall = function() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function() {
-      deferredPrompt = null;
-      var b = document.getElementById('install-banner');
-      if (b) b.remove();
-    });
+  window._pwaInstall = function() {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function(){ deferred = null; var b = document.getElementById('pwa-banner'); if(b) b.remove(); });
   };
 
-  // iOS Safari instructions
+  // iOS banner
   var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-  var isStandalone = window.navigator.standalone === true;
-  if (isIOS && !isStandalone) {
+  if (isIOS && !window.navigator.standalone) {
     setTimeout(function() {
-      if (document.getElementById('install-banner')) return;
-      var b = document.createElement('div');
-      b.id = 'install-banner';
+      if (document.getElementById('pwa-banner')) return;
+      var b = document.createElement('div'); b.id = 'pwa-banner';
       b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2d3148;padding:14px 16px;z-index:999;';
-      b.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
-        + '<strong style="font-size:14px;color:#e8eaf0">Instalar en iPhone / iPad</strong>'
-        + '<button onclick="this.closest(\'#install-banner\').remove()" style="background:none;border:none;color:#8b90a8;font-size:20px;cursor:pointer;line-height:1">x</button>'
+      b.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
+        + '<strong style="color:#e8eaf0">Instalar en iPhone</strong>'
+        + '<button onclick="document.getElementById(\'pwa-banner\').remove()" style="background:none;border:none;color:#8b90a8;font-size:20px;cursor:pointer">x</button>'
         + '</div>'
         + '<div style="font-size:13px;color:#8b90a8;line-height:1.7">'
-        + 'En Safari: toca <strong style="color:#e8eaf0">Compartir</strong> (cuadro con flecha) '
-        + '→ <strong style="color:#e8eaf0">Agregar a pantalla de inicio</strong> '
-        + '→ <strong style="color:#1dce8e">Agregar</strong>'
+        + 'Safari: toca <strong style="color:#e8eaf0">Compartir</strong> (cuadro flecha) '
+        + '&#8594; <strong style="color:#e8eaf0">Agregar a pantalla de inicio</strong> '
+        + '&#8594; <strong style="color:#1dce8e">Agregar</strong>'
         + '</div>';
       document.body.appendChild(b);
     }, 2000);
   }
 })();
 
-// --- UI state helpers ----------------------------------
-function showRunningState() {
-  document.getElementById('idle-state').style.display = 'none';
-  document.getElementById('running-state').style.display = 'flex';
-}
-
-function showIdleState() {
-  document.getElementById('running-state').style.display = 'none';
-  document.getElementById('idle-state').style.display = 'flex';
-}
-
-// --- Init ---------------------------------------------
+// ============================================================
+// INIT
+// ============================================================
 if (window.speechSynthesis) {
   window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function(){ window.speechSynthesis.getVoices(); };
 }
-renderSeriesList();
 updateDisplay();
-
+renderReps();
 </script>
 </body>
 </html>
