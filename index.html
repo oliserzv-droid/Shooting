@@ -8,13 +8,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shooting Trainer">
 <meta name="theme-color" content="#0f1117">
-<script>
-if(location.protocol==='https:'){
-  var ml=document.createElement('link');ml.rel='manifest';ml.href='/manifest.json';document.head.appendChild(ml);
-  var al=document.createElement('link');al.rel='apple-touch-icon';al.href='/icon-192.png';document.head.appendChild(al);
-  var fl=document.createElement('link');fl.rel='icon';fl.type='image/png';fl.href='/icon-192.png';document.head.appendChild(fl);
-}
-</script>
 <title>Olympic Shooting Trainer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -1022,17 +1015,48 @@ function importJSON(event) {
 //  PWA -- Manifest + Service Worker (inline, no server needed)
 // ============================================================
 (function setupPWA() {
-  if (location.protocol !== 'https:') return; // skip PWA setup when opening locally
-  // Register real Service Worker
+  if (location.protocol !== 'https:') return;
+
+  var ICON192 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFe0lEQVR42u3dS3LbQAwFwLlBKiuvcmUdLVdKKhfIzyKJh9euws6WhgB6KFOc4TkP/nz5+vFDiF9xNv4orKgDoliiEoPCiEoICiEqIUi8qIUg2aIWgSSLWgSSKyoRSKiohiCRohaAJIpaBJInahFImqhFIFmiGoFEiVoAkiSqEUiQqAUgOaIagcSIWgCSIqoRSIgAQIhGAJIhqhFIhABACADEO+Lb99dlIb8A1DQ7FABoehgA0PBAAKDxQbgCgCTsbXoYABjX+L97v6fGAoDGv72x3vl3IADwWOO/8/1TjwWAssa/ahybjg+AZc1/x1g2Hy8AgY1/95jacgDA0OZ/alzN+QCgrNAT378RwtH8rzFjlCsAago6fSwtCE5r808cq/wBUFO4tLFthXA0PwDNCI7mB6AZwdne/Enjl2sAagqyYbwbEBzND0AzgqP5AWhGsA5A8rGoAwAVSU8HsKkeR7IBaK7LkeSOFWjqEwhgyxdc2xexJyOIBmAvoZdabQWQeDdn+4ZXiQiOjz77do5Tt+UANuwq8b+/k44AgMAEJu8Mp4ZBAKYl7spmu+Lvk3IHwPCkbdwaEYDBANKaf+I3wRAAEDOOu197cy7jAUzdqe3KcTzx+hPzCsAfkrS1SE++z6T81gN4ukBPvf/T79WQ43gAm99/0u7QzWeBY/af895txzsBwWmd/W2P3pdzAAYVYurlSQAUoWJJJAQAjLtXZkoNACi69OgBGa+qS7LjATTM/s0App0FagB4QkzGWQCAguafuC/QhHpUADD7AzAJwTH7i+azAAACgLaPP5p9/l2qAJj9nQUA2H/pM2WMACwBkL6h1qaPQQBceMCpews13SNUBaBt9k/f87PlLABASPNvXa8AAAAAALDn8/+W7c9b/g8AIKz5nz4WAEIBbJn9ty3cB2AJgI1PggFg0TeMAOT9IwwAAAA0fARKjIkAtucYAAAAAAAAAAAAAAAAAADAVSBXgVwFAgAAAHwTDIBvggFwLxAAALgb1N2gAFgPAIAVYVaEWREGAAAAAGBXCADsC2RfIJ//7QxnZzizv71B7Q1qb1AABACbAUz6GJQMYFM/PArAWcDsP6n5ARAAbAcwFYGnRJYCcBYAwIOynQU8KR6A+xPQ+GXTxJwA8NCXQADMnv1rADgLfFTd8zN19geg4G5L+R8KoL0IU9crNDV/LYAJxZi4ZHN7zqMAbC+I4wVg7Ez81McBeQagZmZquvQ4dfYfAWD67JS+Wm3yFisTbkocD2DSfj5JAKbvLwTA0ETdNY67X3tzLgEIPBvc9ZqT8whAOILPjOnq19L8ANy+ncmdAFL3FgIgMHFXNNs7/y4tX5P6bRyAyQm8+nle6RtqpTV/LIBUBJsenpFWtygACTOJxs+f/UcDSEpoc9MnN388gImJbWr65DpFAEhP7rtAqE8xgA1JTtgXqLUuR7IBaK7HkXQAmuuwDkBK8jeNGwAFqACwrfkjAWwpxNarWWm9FAlgQ0HSx7rlmQuxAP71GjsAXfmtAJBcpMTxbXzaTjyA1GJtubcpvXdWAEgsXPodrlt6ZhWAlBVT0wBsujepHkDyskG5AuDRuzCbAGy7KxWAsEJP3gGv6ZnK6wF85p78TQA2rkUA4MFdHRIAbF2EA8CCFVp3vq7mB+CytbsTAGxdawxA6CL2KwE0LLIHYPHWJn8DoG1LFQAKIdhLaAiAXz8SsR+DegJQCUH9AKgCoT4A1GFQBwBqUMgvAEIAIAQAQrwDAASiuvkBEABIiGgGAIGobn4ARD0ACER18wMg6gFAIKqbHwBRDwACUd38EIj65odA1Dc/BKK++QEQ9QBAENWND4HQ/BAIzQ+B0PwgCI0PgtD4IAiND4PIbfqfDWSvP1x6g70AAAAASUVORK5CYII=';
+  var ICON512 = 'data:image/png;base64,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';
+
+  // Inject apple-touch-icon and favicon dynamically
+  var al = document.createElement('link'); al.rel='apple-touch-icon'; al.href=ICON192; document.head.appendChild(al);
+  var fl = document.createElement('link'); fl.rel='icon'; fl.type='image/png'; fl.href=ICON192; document.head.appendChild(fl);
+
+  // Build and inject manifest blob
+  var manifest = {
+    name: 'Olympic Shooting Trainer',
+    short_name: 'Shooting',
+    description: 'Cronometro interval timer y registro ISSF para tiro olimpico',
+    start_url: location.pathname,
+    display: 'standalone',
+    background_color: '#0f1117',
+    theme_color: '#0f1117',
+    orientation: 'portrait-primary',
+    lang: 'es',
+    icons: [
+      {src: ICON192, sizes:'192x192', type:'image/png', purpose:'any maskable'},
+      {src: ICON512, sizes:'512x512', type:'image/png', purpose:'any maskable'}
+    ]
+  };
+  var mblob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  var murl  = URL.createObjectURL(mblob);
+  var ml = document.createElement('link'); ml.rel='manifest'; ml.href=murl; document.head.appendChild(ml);
+
+  // Register SW via blob (works on any path/subdirectory)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js', {scope: '/'})
-      .then(() => console.log('[PWA] Service worker registered'))
-      .catch(e => console.log('[PWA] SW error:', e));
+    var swCode = "const CACHE='ost-v3';\nself.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.add(self.registration.scope)).then(()=>self.skipWaiting()));});\nself.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});\nself.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(self.registration.scope))));});";
+    var swBlob = new Blob([swCode], {type:'application/javascript'});
+    var swUrl  = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl, {scope: './'})
+      .then(function(){ console.log('[PWA] SW registered'); })
+      .catch(function(e){ console.log('[PWA] SW error:', e); });
   }
 
-  // Show install prompt banner
-  let deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', e => {
+  // Android install prompt
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
     showInstallBanner();
@@ -1040,62 +1064,47 @@ function importJSON(event) {
 
   function showInstallBanner() {
     if (document.getElementById('install-banner')) return;
-    const banner = document.createElement('div');
-    banner.id = 'install-banner';
-    banner.style.cssText = `
-      position:fixed;bottom:0;left:0;right:0;
-      background:#1a1d27;border-top:1px solid #2d3148;
-      padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
-      z-index:999;gap:10px;flex-wrap:wrap;
-    `;
-    banner.innerHTML = `
-      <div style="font-size:13px;color:#e8eaf0;flex:1">
-          <strong>Instalar app</strong> en tu dispositivo para uso sin internet
-      </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="doInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Instalar</button>
-        <button onclick="document.getElementById('install-banner').remove()" style="padding:7px 12px;background:none;border:1px solid #3d4260;border-radius:8px;color:#8b90a8;font-size:13px;cursor:pointer;font-family:inherit">Ahora no</button>
-      </div>
-    `;
-    document.body.appendChild(banner);
+    var b = document.createElement('div');
+    b.id = 'install-banner';
+    b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2d3148;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:999;gap:10px;flex-wrap:wrap;max-width:680px;margin:0 auto;';
+    b.innerHTML = '<div style="font-size:13px;color:#e8eaf0;flex:1"><strong>Instalar app</strong> en tu dispositivo</div>'
+      + '<div style="display:flex;gap:8px">'
+      + '<button onclick="window._doInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Instalar</button>'
+      + '<button onclick="document.getElementById(\'install-banner\').remove()" style="padding:7px 12px;background:none;border:1px solid #3d4260;border-radius:8px;color:#8b90a8;font-size:13px;cursor:pointer;font-family:inherit">Ahora no</button>'
+      + '</div>';
+    document.body.appendChild(b);
   }
 
-  window.doInstall = function() {
+  window._doInstall = function() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(() => {
+    deferredPrompt.userChoice.then(function() {
       deferredPrompt = null;
-      const b = document.getElementById('install-banner');
+      var b = document.getElementById('install-banner');
       if (b) b.remove();
     });
   };
 
-  // iOS: show manual instructions since iOS doesn't support beforeinstallprompt
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-  const isStandalone = window.navigator.standalone === true;
+  // iOS Safari instructions
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var isStandalone = window.navigator.standalone === true;
   if (isIOS && !isStandalone) {
-    setTimeout(() => {
+    setTimeout(function() {
       if (document.getElementById('install-banner')) return;
-      const banner = document.createElement('div');
-      banner.id = 'install-banner';
-      banner.style.cssText = `
-        position:fixed;bottom:0;left:0;right:0;
-        background:#1a1d27;border-top:1px solid #2d3148;
-        padding:14px 16px;z-index:999;
-      `;
-      banner.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-          <strong style="font-size:14px;color:#e8eaf0">  Instalar en iPhone</strong>
-          <button onclick="this.closest('#install-banner').remove()" style="background:none;border:none;color:#8b90a8;font-size:18px;cursor:pointer;line-height:1">×</button>
-        </div>
-        <div style="font-size:13px;color:#8b90a8;line-height:1.6">
-          Toca <strong style="color:#e8eaf0">Compartir</strong> (  ) en Safari -> 
-          <strong style="color:#e8eaf0">"Agregar a pantalla de inicio"</strong> -> 
-          <strong style="color:#1dce8e">Agregar</strong>
-        </div>
-      `;
-      document.body.appendChild(banner);
-    }, 2500);
+      var b = document.createElement('div');
+      b.id = 'install-banner';
+      b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1d27;border-top:1px solid #2d3148;padding:14px 16px;z-index:999;';
+      b.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
+        + '<strong style="font-size:14px;color:#e8eaf0">Instalar en iPhone / iPad</strong>'
+        + '<button onclick="this.closest(\'#install-banner\').remove()" style="background:none;border:none;color:#8b90a8;font-size:20px;cursor:pointer;line-height:1">x</button>'
+        + '</div>'
+        + '<div style="font-size:13px;color:#8b90a8;line-height:1.7">'
+        + 'En Safari: toca <strong style="color:#e8eaf0">Compartir</strong> (cuadro con flecha) '
+        + '→ <strong style="color:#e8eaf0">Agregar a pantalla de inicio</strong> '
+        + '→ <strong style="color:#1dce8e">Agregar</strong>'
+        + '</div>';
+      document.body.appendChild(b);
+    }, 2000);
   }
 })();
 
