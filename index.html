@@ -8,9 +8,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shooting Trainer">
 <meta name="theme-color" content="#0f1117">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<script>
+if(location.protocol==='https:'){
+  var ml=document.createElement('link');ml.rel='manifest';ml.href='/manifest.json';document.head.appendChild(ml);
+  var al=document.createElement('link');al.rel='apple-touch-icon';al.href='/icon-192.png';document.head.appendChild(al);
+  var fl=document.createElement('link');fl.rel='icon';fl.type='image/png';fl.href='/icon-192.png';document.head.appendChild(fl);
+}
+</script>
 <title>Olympic Shooting Trainer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -357,9 +361,9 @@ textarea{resize:vertical;min-height:60px}
 
 <script>
 
-// ═══════════════════════════════════════════════════════
+// ============================================================
 //  AUDIO ENGINE
-// ═══════════════════════════════════════════════════════
+// ============================================================
 let audioMode = 'voice'; // 'voice' | 'beep' | 'off'
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
@@ -387,7 +391,7 @@ function beep(freq, dur, type='sine', vol=0.4, delay=0) {
   } catch(e){}
 }
 
-// ─── Text-to-speech ───────────────────────────────────
+// --- Text-to-speech -----------------------------------
 let ttsQueue = [];
 let ttsSpeaking = false;
 
@@ -430,7 +434,7 @@ function fallbackBeepForPhase(text) {
   else if (text.includes('uno') || text === '1') beep(600, .12, 'square', .35);
 }
 
-// Phase name → spoken text
+// Phase name -> spoken text
 const PHASE_VOICE = {
   work: 'Trabajo',
   rest: 'Descanso',
@@ -462,13 +466,13 @@ function playHalfTime() {
 function playDone() {
   if (audioMode === 'off') return;
   if (audioMode === 'voice') {
-    speak('Sesión completada. ¡Excelente trabajo!', true);
+    speak('Sesion completada. Excelente trabajo!', true);
   } else {
     [523,659,784,1047].forEach((f,i) => beep(f,.3,'square',.3,i*.12));
   }
 }
 
-// ─── Spoken countdown 3,2,1 ──────────────────────────
+// --- Spoken countdown 3,2,1 --------------------------
 let cdTimers = [];
 
 function cancelAllCD() {
@@ -499,9 +503,9 @@ function setAudioMode(mode, el) {
   if (mode !== 'off') getACtx();
 }
 
-// ═══════════════════════════════════════════════════════
+// ============================================================
 //  TIMER STATE
-// ═══════════════════════════════════════════════════════
+// ============================================================
 let cfg = {work:30, rest:15, rounds:5, pause:60, series:3};
 let mainTimer = null;
 let phase = 'work';
@@ -531,7 +535,7 @@ function renderSeriesList() {
   let html = '';
   for (let i=0; i<cfg.series; i++) {
     const active = running && i===(curSeries-1);
-    html += `<div class="ex-item${active?' active':''}" title="Repetición ${i+1}">${i+1}</div>`;
+    html += `<div class="ex-item${active?' active':''}" title="Rep ${i+1}">${i+1}</div>`;
   }
   el.innerHTML = html;
 }
@@ -552,7 +556,7 @@ function updateDisplay() {
 
 function updateRoundInfo() {
   document.getElementById('round-info').textContent =
-    `Ejercicio ${curRound} / ${cfg.rounds} · Repetición ${curSeries} / ${cfg.series}`;
+    `Ejercicio ${curRound} / ${cfg.rounds} - Rep ${curSeries} / ${cfg.series}`;
 }
 
 function setPhaseBadge(txt, cls) {
@@ -561,27 +565,24 @@ function setPhaseBadge(txt, cls) {
   b.className = 'phase-badge ' + cls;
 }
 
-// ═══════════════════════════════════════════════════════
+// ============================================================
 //  TIMER CORE
-// ═══════════════════════════════════════════════════════
+// ============================================================
 function startTimer() {
   getACtx();
   if (paused) {
     paused = false;
-    document.getElementById('pause-btn').innerHTML = '⏸ Pausa';
-    document.getElementById('pause-btn').style.display = 'flex';
-    document.getElementById('start-btn').style.display = 'none';
-    beginPhase(phase, false); // resume — no re-announce
+    document.getElementById('pause-btn').innerHTML = '|| Pausa';
+      beginPhase(phase, false); // resume -- no re-announce
     return;
   }
   running = true; paused = false;
   phase = 'work'; curRound = 1; curSeries = 1;
   timeLeft = cfg.work; totalTime = cfg.work;
   halfNotified = false; endingCDActive = false;
-  document.getElementById('start-btn').style.display = 'none';
-  document.getElementById('pause-btn').style.display = 'flex';
-  renderSeriesList();
+  showRunningState();
   switchTab('home');
+  renderSeriesList();
   beginPhase('work', true);
 }
 
@@ -597,7 +598,7 @@ function beginPhase(p, announce) {
     updateDisplay(); renderSeriesList(); tick();
   }
   // set badge
-  const badges = {work:'🔴 TRABAJO', rest:'🔵 DESCANSO', prep:'⏸ PAUSA EJERCICIO'};
+  const badges = {work:'TRABAJO', rest:'DESCANSO', prep:'PAUSA EJERCICIO'};
   const badgeCls = {work:'work', rest:'rest', prep:'prep'};
   setPhaseBadge(badges[p]||p, badgeCls[p]||'idle');
 }
@@ -631,7 +632,7 @@ function tick() {
         updateDisplay();
         advancePhase();
       });
-      return; // stop normal ticking — countdown handles the rest
+      return; // stop normal ticking -- countdown handles the rest
     }
 
     if (timeLeft <= 0) {
@@ -671,12 +672,12 @@ function advancePhase() {
 // Called when one work+rest cycle (1 round) finishes
 function finishRound() {
   if (curSeries < cfg.series) {
-    // More rounds within this exercise → keep going
+    // More rounds within this exercise -> keep going
     curSeries++;
     timeLeft = cfg.work; totalTime = cfg.work;
     beginPhase('work', true);
   } else {
-    // All rounds of this exercise done → check if more exercises remain
+    // All rounds of this exercise done -> check if more exercises remain
     if (curRound < cfg.rounds) {
       // Enter pausa-ejercicio (or go directly if pause=0)
       if (cfg.pause > 0) {
@@ -700,15 +701,14 @@ function startNextExercise() {
 function doneTimer() {
   running = false; clearTimeout(mainTimer);
   playDone();
-  setPhaseBadge('✅ ¡Sesión completada!', 'done');
+  setPhaseBadge('[OK] ¡Sesión completada!', 'done');
   const td = document.getElementById('time-display');
   td.textContent = '00:00';
   td.className = 'time-big';
-  document.getElementById('timer-glow').className = 'timer-glow';
-  document.getElementById('start-btn').style.display = 'flex';
-  document.getElementById('start-btn').innerHTML = '▶ Iniciar';
-  document.getElementById('pause-btn').style.display = 'none';
+  document.getElementById('timer-glow').className = 'timer-glow idle';
+  document.getElementById('pause-btn').innerHTML = '|| Pausa';
   renderSeriesList();
+  setTimeout(() => { showIdleState(); }, 2200);
 }
 
 function pauseTimer() {
@@ -718,23 +718,18 @@ function pauseTimer() {
     clearTimeout(mainTimer);
     cancelAllCD();
     endingCDActive = false;
-    document.getElementById('pause-btn').innerHTML = '▶ Reanudar';
-    setPhaseBadge('⏸ Pausado', 'idle');
-    document.getElementById('start-btn').style.display = 'flex';
-    document.getElementById('start-btn').innerHTML = '▶ Reanudar';
-    document.getElementById('start-btn').onclick = resumeTimer;
-    document.getElementById('pause-btn').style.display = 'none';
+    document.getElementById('pause-btn').innerHTML = '  Reanudar';
+    document.getElementById('pause-btn').onclick = resumeTimer;
+    setPhaseBadge('|| Pausado', 'idle');
   }
 }
 
 function resumeTimer() {
   if (!paused) return;
   paused = false;
-  document.getElementById('start-btn').style.display = 'none';
-  document.getElementById('start-btn').onclick = startTimer;
-  document.getElementById('pause-btn').style.display = 'flex';
-  document.getElementById('pause-btn').innerHTML = '⏸ Pausa';
-  const badges = {work:'🔴 TRABAJO', rest:'🔵 DESCANSO', prep:'⏸ PAUSA EJERCICIO'};
+  document.getElementById('pause-btn').innerHTML = '|| Pausa';
+  document.getElementById('pause-btn').onclick = pauseTimer;
+  const badges = {work:'TRABAJO', rest:'DESCANSO', prep:'PAUSA EJERCICIO'};
   const badgeCls = {work:'work', rest:'rest', prep:'prep'};
   setPhaseBadge(badges[phase]||phase, badgeCls[phase]||'idle');
   tick();
@@ -746,26 +741,25 @@ function resetTimer() {
   phase = 'work'; curRound = 1; curSeries = 1;
   timeLeft = cfg.work; totalTime = cfg.work;
   halfNotified = false;
-  document.getElementById('start-btn').style.display = 'flex';
-  document.getElementById('start-btn').innerHTML = '▶ Iniciar';
-  document.getElementById('start-btn').onclick = startTimer;
-  document.getElementById('pause-btn').style.display = 'none';
+  document.getElementById('pause-btn').innerHTML = '|| Pausa';
+  document.getElementById('pause-btn').onclick = pauseTimer;
   setPhaseBadge('Listo para iniciar', 'idle');
   document.getElementById('timer-glow').className = 'timer-glow idle';
   updateDisplay(); renderSeriesList();
+  showIdleState();
 }
 
-// ═══════════════════════════════════════════════════════
+// ============================================================
 //  SHOOTING LOG
-// ═══════════════════════════════════════════════════════
+// ============================================================
 const ISSF_EVENTS = [
-  {id:'ap10m',  name:'10m Pistola Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp · 75 min'},
-  {id:'ar10m',  name:'10m Carabina Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp · 75 min'},
-  {id:'rfp25m', name:'25m Pistola Fuego Rápido',   shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'60 disp · hit/miss'},
-  {id:'p25m',   name:'25m Pistola (Damas)',         shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'30+30 disp · 2 etapas'},
-  {id:'r3p50m', name:'50m Carabina 3 Posiciones',  shots:120, max:1264,  seriesCount:3,  shotsPerSeries:40, decimal:true,  desc:'3×40 disp · 2h45min', positions:['Rodilla (40)','Tendido (40)','Pie (40)']},
-  {id:'trap',   name:'Trap (Foso)',                 shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos · 5 series'},
-  {id:'skeet',  name:'Skeet',                       shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos · 5 series'},
+  {id:'ap10m',  name:'10m Pistola Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp - 75 min'},
+  {id:'ar10m',  name:'10m Carabina Aire',          shots:60,  max:654,   seriesCount:6,  shotsPerSeries:10, decimal:true,  desc:'60 disp - 75 min'},
+  {id:'rfp25m', name:'25m Pistola Fuego Rápido',   shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'60 disp - hit/miss'},
+  {id:'p25m',   name:'25m Pistola (Damas)',         shots:60,  max:600,   seriesCount:12, shotsPerSeries:5,  decimal:false, desc:'30+30 disp - 2 etapas'},
+  {id:'r3p50m', name:'50m Carabina 3 Posiciones',  shots:120, max:1264,  seriesCount:3,  shotsPerSeries:40, decimal:true,  desc:'3×40 disp - 2h45min', positions:['Rodilla (40)','Tendido (40)','Pie (40)']},
+  {id:'trap',   name:'Trap (Foso)',                 shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos - 5 series'},
+  {id:'skeet',  name:'Skeet',                       shots:125, max:125,   seriesCount:5,  shotsPerSeries:25, decimal:false, desc:'125 platos - 5 series'},
 ];
 
 let sessionType = 'competition';
@@ -802,12 +796,12 @@ function renderShotEntry() {
   let html = '<div class="shot-grid">';
   for (let si=0; si<ev.seriesCount; si++) {
     const lbl = ev.positions ? ev.positions[si] : `Serie ${si+1}`;
-    html += `<div class="series-block"><div class="series-lbl">${lbl} — ${ev.shotsPerSeries} disparos</div><div class="shots-row">`;
+    html += `<div class="series-block"><div class="series-lbl">${lbl} -- ${ev.shotsPerSeries} disparos</div><div class="shots-row">`;
     for (let i=0; i<ev.shotsPerSeries; i++) {
       const iid = `s${si}_d${i}`;
       shotInputs.push({id:iid, decimal:ev.decimal});
       if (ev.decimal) {
-        // decimal: 0.0 – 10.9
+        // decimal: 0.0   10.9
         html += `<div class="shot-wrap">
           <span class="shot-num">#${si*ev.shotsPerSeries+i+1}</span>
           <input class="shot-input" type="number" id="${iid}"
@@ -828,9 +822,9 @@ function renderShotEntry() {
   }
   html += '</div>';
   if (ev.decimal) {
-    html += `<div class="inner10-hint">⚡ Decimal ISSF: 0.0 – 10.9 por disparo. Inner Ten = <strong>10.9</strong>. Máximo: <strong>${ev.max} pts</strong></div>`;
+    html += `<div class="inner10-hint">* Decimal ISSF: 0.0   10.9 por disparo. Inner Ten = <strong>10.9</strong>. Máximo: <strong>${ev.max} pts</strong></div>`;
   } else {
-    html += `<div class="inner10-hint">✓ Hit = 1 · Miss = 0. Máximo: <strong>${ev.max} pts</strong></div>`;
+    html += `<div class="inner10-hint">OK Hit = 1 - Miss = 0. Máximo: <strong>${ev.max} pts</strong></div>`;
   }
   document.getElementById('shot-entry').innerHTML = html;
   document.getElementById('max-possible').textContent = `Máximo posible: ${ev.max} pts`;
@@ -902,7 +896,7 @@ function renderHistory() {
   `;
   const list = document.getElementById('history-list');
   if (!filtered.length) {
-    list.innerHTML = '<div class="empty-state">🎯<br><br>Sin registros aún.<br>Registra tu primera sesión.</div>';
+    list.innerHTML = '<div class="empty-state"> <br><br>Sin registros aún.<br>Registra tu primera sesión.</div>';
     return;
   }
   list.innerHTML = filtered.map(r => {
@@ -911,18 +905,18 @@ function renderHistory() {
       <div class="record-header">
         <div>
           <div class="record-event">${r.eventName}</div>
-          <div class="record-meta">${r.date} · ${r.place}</div>
+          <div class="record-meta">${r.date} - ${r.place}</div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:8px">
           <div>
             <div class="record-score">${r.decimal?r.score.toFixed(1):r.score}</div>
             <div class="record-pct">${pct}% del máx.</div>
           </div>
-          <button class="del-btn" onclick="deleteRecord(${r.id})">🗑</button>
+          <button class="del-btn" onclick="deleteRecord(${r.id})"> </button>
         </div>
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
-        <span class="badge ${r.type==='competition'?'comp':'train'}">${r.type==='competition'?'🏆 Competencia':'🎯 Entrenamiento'}</span>
+        <span class="badge ${r.type==='competition'?'comp':'train'}">${r.type==='competition'?'  Competencia':'  Entrenamiento'}</span>
         ${r.notes?`<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px">${r.notes}</span>`:''}
       </div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
@@ -953,9 +947,9 @@ function switchTab(t) {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  PERSISTENCE — localStorage
-// ═══════════════════════════════════════════════════════
+// ============================================================
+//  PERSISTENCE -- localStorage
+// ============================================================
 function persistRecords() {
   try { localStorage.setItem('ost_records', JSON.stringify(records)); } catch(e) {}
 }
@@ -967,7 +961,7 @@ function clearAllRecords() {
   renderHistory();
 }
 
-// ─── Export CSV ──────────────────────────────────────
+// --- Export CSV --------------------------------------
 function exportCSV() {
   if (!records.length) { alert('No hay registros para exportar.'); return; }
   const header = ['ID','Tipo','Modalidad','Fecha','Lugar','Puntaje','Maximo','Porcentaje','Notas'];
@@ -980,7 +974,7 @@ function exportCSV() {
   ]);
   const csv = [header, ...rows].map(r => r.join(',')).join('
 ');
-  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const blob = new Blob([' '+csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -989,7 +983,7 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 }
 
-// ─── Export JSON ─────────────────────────────────────
+// --- Export JSON -------------------------------------
 function exportJSON() {
   if (!records.length) { alert('No hay registros para exportar.'); return; }
   const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
@@ -1001,7 +995,7 @@ function exportJSON() {
   URL.revokeObjectURL(url);
 }
 
-// ─── Import JSON ─────────────────────────────────────
+// --- Import JSON -------------------------------------
 function importJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -1015,19 +1009,20 @@ function importJSON(event) {
       records = [...records, ...newRecs].sort((a,b)=>b.id-a.id);
       persistRecords();
       renderHistory();
-      alert(`✅ Importados ${newRecs.length} registros nuevos. (${imported.length - newRecs.length} ya existían)`);
+      alert(`[OK] Importados ${newRecs.length} registros nuevos. (${imported.length - newRecs.length} ya existían)`);
     } catch(err) {
-      alert('❌ Error al importar: el archivo no es válido.');
+      alert('  Error al importar: el archivo no es válido.');
     }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
 
-// ═══════════════════════════════════════════════════════
-//  PWA — Manifest + Service Worker (inline, no server needed)
-// ═══════════════════════════════════════════════════════
+// ============================================================
+//  PWA -- Manifest + Service Worker (inline, no server needed)
+// ============================================================
 (function setupPWA() {
+  if (location.protocol !== 'https:') return; // skip PWA setup when opening locally
   // Register real Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', {scope: '/'})
@@ -1055,7 +1050,7 @@ function importJSON(event) {
     `;
     banner.innerHTML = `
       <div style="font-size:13px;color:#e8eaf0;flex:1">
-        📲 <strong>Instalar app</strong> en tu dispositivo para uso sin internet
+          <strong>Instalar app</strong> en tu dispositivo para uso sin internet
       </div>
       <div style="display:flex;gap:8px">
         <button onclick="doInstall()" style="padding:7px 16px;background:#1dce8e;color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">Instalar</button>
@@ -1090,12 +1085,12 @@ function importJSON(event) {
       `;
       banner.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-          <strong style="font-size:14px;color:#e8eaf0">📲 Instalar en iPhone</strong>
+          <strong style="font-size:14px;color:#e8eaf0">  Instalar en iPhone</strong>
           <button onclick="this.closest('#install-banner').remove()" style="background:none;border:none;color:#8b90a8;font-size:18px;cursor:pointer;line-height:1">×</button>
         </div>
         <div style="font-size:13px;color:#8b90a8;line-height:1.6">
-          Toca <strong style="color:#e8eaf0">Compartir</strong> (□↑) en Safari → 
-          <strong style="color:#e8eaf0">"Agregar a pantalla de inicio"</strong> → 
+          Toca <strong style="color:#e8eaf0">Compartir</strong> (  ) en Safari -> 
+          <strong style="color:#e8eaf0">"Agregar a pantalla de inicio"</strong> -> 
           <strong style="color:#1dce8e">Agregar</strong>
         </div>
       `;
@@ -1104,7 +1099,18 @@ function importJSON(event) {
   }
 })();
 
-// ─── Init ─────────────────────────────────────────────
+// --- UI state helpers ----------------------------------
+function showRunningState() {
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('running-state').style.display = 'flex';
+}
+
+function showIdleState() {
+  document.getElementById('running-state').style.display = 'none';
+  document.getElementById('idle-state').style.display = 'flex';
+}
+
+// --- Init ---------------------------------------------
 if (window.speechSynthesis) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
