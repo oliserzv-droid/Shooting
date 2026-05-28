@@ -8,7 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shooting Trainer">
 <meta name="theme-color" content="#0f1117">
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Olympic Shooting Trainer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -19,66 +21,103 @@
   --text:#e8eaf0;--text2:#8b90a8;--text3:#555a75;
   --green:#1dce8e;--blue:#4b9fff;--amber:#f5a623;--red:#f05353;
   --radius:12px;--radius-sm:8px;
+  --nav-h:64px;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.app{max-width:680px;margin:0 auto;padding:1rem}
-h1{font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
-h1 span{color:var(--green)}
-.tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--bg2);border-radius:var(--radius);padding:4px;border:1px solid var(--border)}
-.tab{flex:1;padding:8px;border:none;background:none;color:var(--text2);font-size:13px;cursor:pointer;border-radius:var(--radius-sm);font-family:inherit;transition:all .15s;font-weight:500}
-.tab.active{background:var(--bg3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh}
+
+/* ── LAYOUT ── */
+.app{max-width:680px;margin:0 auto;padding:0;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+.top-bar{padding:14px 16px 0;flex-shrink:0}
+.top-bar h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin-bottom:0;display:flex;align-items:center;gap:8px}
+.top-bar h1 span{color:var(--green)}
+.scroll-area{flex:1;overflow-y:auto;padding:14px 16px;padding-bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom))}
 .section{display:none}.section.active{display:block}
-.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
-.config-label{font-size:11px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-.config-val{font-size:24px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-bottom:10px;color:var(--text)}
-.stepper{display:flex;gap:6px;align-items:center}
-.step-btn{width:30px;height:30px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text);transition:background .1s}
-.step-btn:hover{background:var(--border2)}
-.step-display{min-width:44px;text-align:center;font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text)}
-.exercises-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
-.exercises-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.ex-item{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
-.ex-item.active{background:rgba(29,206,142,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(29,206,142,.3)}
 
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  background:var(--bg2);border-top:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-around;
+  padding-top:8px;padding-bottom:env(safe-area-inset-bottom);
+  z-index:50;max-width:680px;margin:0 auto;
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 0;border:none;background:none;cursor:pointer;
+  color:var(--text3);font-size:10px;font-family:inherit;font-weight:500;
+  transition:color .15s;letter-spacing:.02em;
+}
+.tab-item .tab-icon{font-size:22px;line-height:1;transition:transform .15s}
+.tab-item.active{color:var(--green)}
+.tab-item.active .tab-icon{transform:scale(1.1)}
 
-.timer-display{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;margin-bottom:10px;position:relative;overflow:hidden}
+/* ── HOME (timer running view) ── */
+.home-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h) - 80px);min-height:calc(100dvh - var(--nav-h) - 80px);gap:20px;padding:10px 0}
+.timer-display{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;width:100%;position:relative;overflow:hidden}
 .timer-glow{position:absolute;inset:0;opacity:0;border-radius:var(--radius);transition:opacity .5s;pointer-events:none}
-.timer-glow.work{background:radial-gradient(ellipse at center,rgba(29,206,142,.08) 0%,transparent 70%);opacity:1}
-.timer-glow.rest{background:radial-gradient(ellipse at center,rgba(75,159,255,.08) 0%,transparent 70%);opacity:1}
-.timer-glow.prep{background:radial-gradient(ellipse at center,rgba(245,166,35,.08) 0%,transparent 70%);opacity:1}
-.phase-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px;border:1px solid}
+.timer-glow.work{background:radial-gradient(ellipse at center,rgba(29,206,142,.1) 0%,transparent 70%);opacity:1}
+.timer-glow.rest{background:radial-gradient(ellipse at center,rgba(75,159,255,.1) 0%,transparent 70%);opacity:1}
+.timer-glow.prep{background:radial-gradient(ellipse at center,rgba(245,166,35,.1) 0%,transparent 70%);opacity:1}
+.phase-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:16px;border:1px solid}
 .phase-badge.work{background:rgba(29,206,142,.15);color:var(--green);border-color:rgba(29,206,142,.3)}
 .phase-badge.rest{background:rgba(75,159,255,.15);color:var(--blue);border-color:rgba(75,159,255,.3)}
 .phase-badge.prep{background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.3)}
 .phase-badge.idle{background:var(--bg3);color:var(--text2);border-color:var(--border)}
 .phase-badge.done{background:rgba(29,206,142,.2);color:var(--green);border-color:rgba(29,206,142,.4)}
-.time-big{font-size:80px;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:8px;transition:color .3s;color:var(--text)}
+.time-big{font-size:96px;font-weight:600;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:12px;transition:color .3s;color:var(--text);letter-spacing:-.02em}
 .time-big.work{color:var(--green)}
 .time-big.rest{color:var(--blue)}
 .time-big.prep{color:var(--amber)}
-.time-big.halfpulse{animation:halfpulse .6s ease-out}
-@keyframes halfpulse{0%{transform:scale(1.15);opacity:.6}100%{transform:scale(1);opacity:1}}
-.round-info{font-size:13px;color:var(--text2);margin-bottom:14px}
-.progress-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.round-info{font-size:14px;color:var(--text2);margin-bottom:16px}
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;border-radius:3px;transition:width .9s linear,background .3s}
 .progress-fill.work{background:var(--green)}
 .progress-fill.rest{background:var(--blue)}
 .progress-fill.prep{background:var(--amber)}
-.controls{display:flex;gap:8px;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.home-controls{display:flex;gap:10px;justify-content:center;width:100%}
+.exercises-mini{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;width:100%}
+.exercises-mini-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:600}
+.exercises-grid{display:flex;flex-wrap:wrap;gap:6px}
+.ex-item{width:32px;height:32px;border-radius:6px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--text3);transition:all .2s}
+.ex-item.active{background:rgba(29,206,142,.18);border-color:var(--green);color:var(--green);box-shadow:0 0 8px rgba(29,206,142,.3)}
+.halftime-flash{position:absolute;inset:0;background:rgba(245,166,35,.12);border-radius:var(--radius);pointer-events:none;animation:flashfade .8s ease-out forwards}
+@keyframes flashfade{0%{opacity:1}100%{opacity:0}}
+
+/* ── HOME idle state (big start button) ── */
+.idle-start{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:calc(100vh - var(--nav-h) - 80px);min-height:calc(100dvh - var(--nav-h) - 80px)}
+.idle-icon{font-size:72px;opacity:.25}
+.idle-hint{font-size:14px;color:var(--text2);text-align:center;line-height:1.6}
+.idle-hint strong{color:var(--text)}
+.big-start{width:140px;height:140px;border-radius:50%;background:var(--green);border:none;color:#000;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 0 40px rgba(29,206,142,.3);transition:transform .15s,box-shadow .15s}
+.big-start:hover{transform:scale(1.04);box-shadow:0 0 60px rgba(29,206,142,.45)}
+.big-start-icon{font-size:36px}
+
+/* ── CONFIG ── */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.config-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.config-label{font-size:11px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.config-val{font-size:24px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-bottom:10px;color:var(--text)}
+.stepper{display:flex;gap:6px;align-items:center}
+.step-btn{width:32px;height:32px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text);transition:background .1s;flex-shrink:0}
+.step-btn:hover{background:var(--border2)}
+.step-display{min-width:44px;text-align:center;font-size:16px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.exercises-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.audio-toggle{display:flex;gap:8px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
+.audio-toggle label{font-size:13px;color:var(--text2);font-weight:500}
+.toggle-group{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
+.tgl-btn{padding:5px 12px;border:none;border-radius:6px;background:none;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;white-space:nowrap}
+.tgl-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+/* ── BUTTONS ── */
 .btn{padding:9px 20px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit;font-weight:500}
 .btn:hover{background:var(--bg3)}
 .btn.primary{background:var(--green);color:#000;border-color:var(--green);font-weight:600}
 .btn.primary:hover{background:#15a870}
 .btn.danger{background:rgba(240,83,83,.15);color:var(--red);border-color:rgba(240,83,83,.3)}
 .btn.danger:hover{background:rgba(240,83,83,.25)}
-/* AUDIO MODE TOGGLE */
-.audio-toggle{display:flex;gap:6px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px}
-.audio-toggle label{font-size:13px;color:var(--text2);margin-right:4px;font-weight:500}
-.toggle-group{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
-.tgl-btn{padding:5px 12px;border:none;border-radius:6px;background:none;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s}
-.tgl-btn.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
-/* FORMS */
+
+/* ── FORMS ── */
 .form-row{margin-bottom:14px}
 .form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
 input[type=text],input[type=date],input[type=number],select,textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .15s}
@@ -128,162 +167,196 @@ textarea{resize:vertical;min-height:60px}
 .del-btn:hover{color:var(--red);background:rgba(240,83,83,.1)}
 .empty-state{text-align:center;padding:3rem;color:var(--text3);font-size:14px}
 .section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;margin-top:1rem;text-transform:uppercase;letter-spacing:.04em}
-/* HALF-TIME flash */
-.halftime-flash{position:absolute;inset:0;background:rgba(245,166,35,.12);border-radius:var(--radius);pointer-events:none;animation:flashfade .8s ease-out forwards}
-@keyframes flashfade{0%{opacity:1}100%{opacity:0}}
 </style>
 </head>
 <body>
 <div class="app">
-  <h1>🎯 Olympic <span>Shooting Trainer</span></h1>
-  <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('timer')">⏱ Cronómetro</button>
-    <button class="tab" onclick="switchTab('log')">📋 Registrar</button>
-    <button class="tab" onclick="switchTab('history')">📊 Historial</button>
+  <div class="top-bar">
+    <h1>🎯 Olympic <span>Shooting Trainer</span></h1>
   </div>
 
-  <!-- ══════ TIMER ══════ -->
-  <div id="section-timer" class="section active">
+  <div class="scroll-area">
 
-    <!-- Audio mode toggle -->
-    <div class="audio-toggle">
-      <label>🔊 Modo audio:</label>
-      <div class="toggle-group">
-        <button class="tgl-btn active" id="tgl-voice" onclick="setAudioMode('voice',this)">🗣 Voz IA</button>
-        <button class="tgl-btn" id="tgl-beep" onclick="setAudioMode('beep',this)">🔔 Tonos</button>
-        <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">🔇 Sin audio</button>
-      </div>
-    </div>
-
-    <div class="config-grid">
-      <div class="config-card">
-        <div class="config-label">🔴 Trabajo</div>
-        <div class="config-val" id="cfg-work-val">30s</div>
-        <div class="stepper">
-          <button class="step-btn" onclick="adj('work',-5)">−</button>
-          <div class="step-display" id="cfg-work">30</div>
-          <button class="step-btn" onclick="adj('work',5)">+</button>
+    <!-- ══════ HOME ══════ -->
+    <div id="section-home" class="section active">
+      <!-- Idle state (not running) -->
+      <div class="idle-start" id="idle-state">
+        <div class="idle-icon">🎯</div>
+        <div class="idle-hint">
+          Configura tu sesión en <strong>Config</strong><br>y pulsa Iniciar para comenzar
         </div>
+        <button class="big-start" onclick="startTimer()">
+          <div class="big-start-icon">▶</div>
+          <div>INICIAR</div>
+        </button>
       </div>
-      <div class="config-card">
-        <div class="config-label">🔵 Descanso</div>
-        <div class="config-val" id="cfg-rest-val">15s</div>
-        <div class="stepper">
-          <button class="step-btn" onclick="adj('rest',-5)">−</button>
-          <div class="step-display" id="cfg-rest">15</div>
-          <button class="step-btn" onclick="adj('rest',5)">+</button>
+      <!-- Running state -->
+      <div class="home-wrap" id="running-state" style="display:none">
+        <div class="timer-display" id="timer-display">
+          <div class="timer-glow idle" id="timer-glow"></div>
+          <div style="position:relative;z-index:1">
+            <div id="phase-badge" class="phase-badge idle">Listo</div>
+            <div class="time-big" id="time-display">00:30</div>
+            <div class="round-info" id="round-info">Ejercicio 1 / 5 · Repetición 1 / 3</div>
+            <div class="progress-bar"><div class="progress-fill work" id="progress-fill" style="width:100%"></div></div>
+          </div>
         </div>
-      </div>
-      <div class="config-card">
-        <div class="config-label">🔁 Ejercicios</div>
-        <div class="config-val" id="cfg-rounds-val">5x</div>
-        <div class="stepper">
-          <button class="step-btn" onclick="adj('rounds',-1)">−</button>
-          <div class="step-display" id="cfg-rounds">5</div>
-          <button class="step-btn" onclick="adj('rounds',1)">+</button>
+        <div class="exercises-mini">
+          <div class="exercises-mini-label">Repeticiones</div>
+          <div class="exercises-grid" id="exercises-list"></div>
         </div>
-      </div>
-      <div class="config-card">
-        <div class="config-label">⏸ Pausa entre ejercicios</div>
-        <div class="config-val" id="cfg-pause-val">60s</div>
-        <div class="stepper">
-          <button class="step-btn" onclick="adj('pause',-5)">−</button>
-          <div class="step-display" id="cfg-pause">60</div>
-          <button class="step-btn" onclick="adj('pause',5)">+</button>
+        <div class="home-controls">
+          <button class="btn" id="pause-btn" onclick="pauseTimer()">⏸ Pausa</button>
+          <button class="btn danger" onclick="resetTimer()">↺ Reset</button>
         </div>
       </div>
     </div>
 
-    <div class="exercises-card">
-      <div class="config-label">📋 Repeticiones por ejercicio</div>
-      <div class="stepper">
-        <button class="step-btn" onclick="adj('series',-1)">−</button>
-        <div class="step-display" id="cfg-series">3</div>
-        <button class="step-btn" onclick="adj('series',1)">+</button>
-        <span style="font-size:13px;color:var(--text2);margin-left:8px">repeticiones / ejercicio</span>
+    <!-- ══════ CONFIG ══════ -->
+    <div id="section-config" class="section">
+      <div class="audio-toggle">
+        <label>🔊 Modo audio:</label>
+        <div class="toggle-group">
+          <button class="tgl-btn active" id="tgl-voice" onclick="setAudioMode('voice',this)">🗣 Voz IA</button>
+          <button class="tgl-btn" id="tgl-beep" onclick="setAudioMode('beep',this)">🔔 Tonos</button>
+          <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">🔇 Sin audio</button>
+        </div>
       </div>
-      <div class="exercises-grid" id="exercises-list"></div>
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-label">🔴 Trabajo</div>
+          <div class="config-val" id="cfg-work-val">30s</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="adj('work',-5)">−</button>
+            <div class="step-display" id="cfg-work">30</div>
+            <button class="step-btn" onclick="adj('work',5)">+</button>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-label">🔵 Descanso</div>
+          <div class="config-val" id="cfg-rest-val">15s</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="adj('rest',-5)">−</button>
+            <div class="step-display" id="cfg-rest">15</div>
+            <button class="step-btn" onclick="adj('rest',5)">+</button>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-label">🔁 Ejercicios</div>
+          <div class="config-val" id="cfg-rounds-val">5x</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="adj('rounds',-1)">−</button>
+            <div class="step-display" id="cfg-rounds">5</div>
+            <button class="step-btn" onclick="adj('rounds',1)">+</button>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-label">⏸ Pausa ejercicios</div>
+          <div class="config-val" id="cfg-pause-val">60s</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="adj('pause',-5)">−</button>
+            <div class="step-display" id="cfg-pause">60</div>
+            <button class="step-btn" onclick="adj('pause',5)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="exercises-card">
+        <div class="config-label">📋 Repeticiones por ejercicio</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="adj('series',-1)">−</button>
+          <div class="step-display" id="cfg-series">3</div>
+          <button class="step-btn" onclick="adj('series',1)">+</button>
+          <span style="font-size:13px;color:var(--text2);margin-left:8px">repeticiones / ejercicio</span>
+        </div>
+      </div>
+      <button class="btn primary" style="width:100%;justify-content:center;margin-top:6px" onclick="startTimer()">▶ Iniciar sesión</button>
     </div>
 
-    <div class="timer-display" id="timer-display">
-      <div class="timer-glow idle" id="timer-glow"></div>
-      <div style="position:relative;z-index:1">
-        <div id="phase-badge" class="phase-badge idle">Listo para iniciar</div>
-        <div class="time-big" id="time-display">00:30</div>
-        <div class="round-info" id="round-info">Ejercicio 1 / 5 · Repetición 1 / 3</div>
-        <div class="progress-bar"><div class="progress-fill work" id="progress-fill" style="width:100%"></div></div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="btn primary" id="start-btn" onclick="startTimer()">▶ Iniciar</button>
-      <button class="btn" id="pause-btn" onclick="pauseTimer()" style="display:none">⏸ Pausa</button>
-      <button class="btn danger" onclick="resetTimer()">↺ Reset</button>
-    </div>
-  </div>
-
-  <!-- ══════ LOG ══════ -->
-  <div id="section-log" class="section">
-    <div class="section-title">Nueva sesión</div>
-    <div class="form-row">
-      <label class="form-label">Tipo de sesión</label>
-      <div class="chip-row">
-        <div class="chip active" onclick="setType('competition',this)">🏆 Competencia</div>
-        <div class="chip" onclick="setType('training',this)">🎯 Entrenamiento</div>
-      </div>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Modalidad ISSF</label>
-      <div class="modal-events" id="event-selector"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <!-- ══════ LOG ══════ -->
+    <div id="section-log" class="section">
+      <div class="section-title">Nueva sesión</div>
       <div class="form-row">
-        <label class="form-label">Fecha</label>
-        <input type="date" id="log-date">
+        <label class="form-label">Tipo de sesión</label>
+        <div class="chip-row">
+          <div class="chip active" onclick="setType('competition',this)">🏆 Competencia</div>
+          <div class="chip" onclick="setType('training',this)">🎯 Entrenamiento</div>
+        </div>
       </div>
       <div class="form-row">
-        <label class="form-label">Lugar / Competencia</label>
-        <input type="text" id="log-place" placeholder="Copa Nacional...">
+        <label class="form-label">Modalidad ISSF</label>
+        <div class="modal-events" id="event-selector"></div>
       </div>
-    </div>
-    <div class="section-title" style="margin-top:.5rem">Ingreso de puntajes</div>
-    <div id="shot-entry"></div>
-    <div class="total-bar">
-      <div>
-        <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total calificación</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:3px" id="max-possible"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-row">
+          <label class="form-label">Fecha</label>
+          <input type="date" id="log-date">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Lugar / Competencia</label>
+          <input type="text" id="log-place" placeholder="Copa Nacional...">
+        </div>
       </div>
-      <div class="total-score" id="total-score">0.0</div>
+      <div class="section-title" style="margin-top:.5rem">Ingreso de puntajes</div>
+      <div id="shot-entry"></div>
+      <div class="total-bar">
+        <div>
+          <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;font-weight:600">Total calificación</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px" id="max-possible"></div>
+        </div>
+        <div class="total-score" id="total-score">0.0</div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Condiciones / Notas</label>
+        <textarea id="log-notes" placeholder="Viento, luz, equipo, sensaciones del disparo..."></textarea>
+      </div>
+      <button class="btn primary" style="width:100%;justify-content:center" onclick="saveRecord()">💾 Guardar sesión</button>
     </div>
-    <div class="form-row">
-      <label class="form-label">Condiciones / Notas</label>
-      <textarea id="log-notes" placeholder="Viento, luz, equipo, sensaciones del disparo..."></textarea>
-    </div>
-    <button class="btn primary" style="width:100%;justify-content:center" onclick="saveRecord()">💾 Guardar sesión</button>
-  </div>
 
-  <!-- ══════ HISTORY ══════ -->
-  <div id="section-history" class="section">
-    <div class="stat-grid" id="stat-grid"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-      <div class="section-title" style="margin:0">Sesiones registradas</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn" onclick="exportCSV()" style="padding:6px 12px;font-size:12px">📥 Exportar CSV</button>
-        <button class="btn" onclick="exportJSON()" style="padding:6px 12px;font-size:12px">💾 Exportar JSON</button>
-        <label class="btn" style="padding:6px 12px;font-size:12px;cursor:pointer">📤 Importar JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
-        <button class="btn danger" onclick="clearAllRecords()" style="padding:6px 12px;font-size:12px">🗑 Borrar todo</button>
+    <!-- ══════ HISTORY ══════ -->
+    <div id="section-history" class="section">
+      <div class="stat-grid" id="stat-grid"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="section-title" style="margin:0">Sesiones</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn" onclick="exportCSV()" style="padding:6px 12px;font-size:12px">📥 CSV</button>
+          <button class="btn" onclick="exportJSON()" style="padding:6px 12px;font-size:12px">💾 JSON</button>
+          <label class="btn" style="padding:6px 12px;font-size:12px;cursor:pointer">📤 Importar<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+          <button class="btn danger" onclick="clearAllRecords()" style="padding:6px 12px;font-size:12px">🗑</button>
+        </div>
       </div>
+      <div class="chip-row" style="margin-bottom:12px">
+        <div class="chip active" onclick="filterHistory('all',this)">Todas</div>
+        <div class="chip" onclick="filterHistory('competition',this)">Competencias</div>
+        <div class="chip" onclick="filterHistory('training',this)">Entrenamientos</div>
+      </div>
+      <div id="history-list" class="records-list"></div>
     </div>
-    <div class="chip-row" style="margin-bottom:12px">
-      <div class="chip active" onclick="filterHistory('all',this)">Todas</div>
-      <div class="chip" onclick="filterHistory('competition',this)">Competencias</div>
-      <div class="chip" onclick="filterHistory('training',this)">Entrenamientos</div>
-    </div>
-    <div id="history-list" class="records-list"></div>
-  </div>
+
+  </div><!-- end scroll-area -->
+
+  <!-- ══════ BOTTOM NAV ══════ -->
+  <nav class="bottom-nav">
+    <button class="tab-item active" data-tab="home" onclick="switchTab('home')">
+      <div class="tab-icon">⏱</div>
+      <div>Home</div>
+    </button>
+    <button class="tab-item" data-tab="config" onclick="switchTab('config')">
+      <div class="tab-icon">⚙️</div>
+      <div>Config</div>
+    </button>
+    <button class="tab-item" data-tab="log" onclick="switchTab('log')">
+      <div class="tab-icon">📋</div>
+      <div>Registrar</div>
+    </button>
+    <button class="tab-item" data-tab="history" onclick="switchTab('history')">
+      <div class="tab-icon">📊</div>
+      <div>Historial</div>
+    </button>
+  </nav>
 </div>
 
 <script>
+
 // ═══════════════════════════════════════════════════════
 //  AUDIO ENGINE
 // ═══════════════════════════════════════════════════════
@@ -508,6 +581,7 @@ function startTimer() {
   document.getElementById('start-btn').style.display = 'none';
   document.getElementById('pause-btn').style.display = 'flex';
   renderSeriesList();
+  switchTab('home');
   beginPhase('work', true);
 }
 
@@ -866,13 +940,17 @@ function filterHistory(mode, el) {
 function deleteRecord(id) { if(!confirm('¿Eliminar esta sesión?')) return; records=records.filter(r=>r.id!==id); persistRecords(); renderHistory(); }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((b,i) => {
-    b.classList.toggle('active', ['timer','log','history'][i]===t);
+  document.querySelectorAll('.tab-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === t);
   });
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('section-'+t).classList.add('active');
   if (t==='log') renderEventSelector();
   if (t==='history') renderHistory();
+  // When going to home, keep timer state visible
+  if (t==='home' && running) {
+    updateDisplay(); renderSeriesList();
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -950,71 +1028,9 @@ function importJSON(event) {
 //  PWA — Manifest + Service Worker (inline, no server needed)
 // ═══════════════════════════════════════════════════════
 (function setupPWA() {
-  // Inline SVG icon as data URI (target/crosshair)
-  const iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-    <rect width="512" height="512" rx="80" fill="#0f1117"/>
-    <circle cx="256" cy="256" r="180" fill="none" stroke="#1dce8e" stroke-width="18"/>
-    <circle cx="256" cy="256" r="110" fill="none" stroke="#1dce8e" stroke-width="14"/>
-    <circle cx="256" cy="256" r="40" fill="#1dce8e"/>
-    <line x1="256" y1="56" x2="256" y2="136" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
-    <line x1="256" y1="376" x2="256" y2="456" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
-    <line x1="56" y1="256" x2="136" y2="256" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
-    <line x1="376" y1="256" x2="456" y2="256" stroke="#1dce8e" stroke-width="14" stroke-linecap="round"/>
-  </svg>`;
-  const iconURL = 'data:image/svg+xml;base64,' + btoa(iconSVG);
-
-  // Inject apple-touch-icon
-  const appleIcon = document.createElement('link');
-  appleIcon.rel = 'apple-touch-icon';
-  appleIcon.href = iconURL;
-  document.head.appendChild(appleIcon);
-
-  // Inject favicon
-  const favicon = document.createElement('link');
-  favicon.rel = 'icon';
-  favicon.type = 'image/svg+xml';
-  favicon.href = iconURL;
-  document.head.appendChild(favicon);
-
-  // Build manifest blob
-  const manifest = {
-    name: 'Olympic Shooting Trainer',
-    short_name: 'Shooting',
-    description: 'Cronómetro interval timer y registro ISSF para tiro olímpico',
-    start_url: '.',
-    display: 'standalone',
-    background_color: '#0f1117',
-    theme_color: '#0f1117',
-    orientation: 'portrait-primary',
-    lang: 'es',
-    icons: [
-      { src: iconURL, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-      { src: iconURL, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
-    ]
-  };
-  const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-  const manifestURL = URL.createObjectURL(manifestBlob);
-  document.getElementById('pwa-manifest').href = manifestURL;
-
-  // Service Worker (inline via blob) — caches the page for offline use
+  // Register real Service Worker
   if ('serviceWorker' in navigator) {
-    const swCode = `
-const CACHE = 'ost-v1';
-const ASSETS = [self.location.href];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
-  ).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match(e.request))));
-});`;
-    const swBlob = new Blob([swCode], {type:'application/javascript'});
-    const swURL = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swURL, {scope: './'})
+    navigator.serviceWorker.register('/sw.js', {scope: '/'})
       .then(() => console.log('[PWA] Service worker registered'))
       .catch(e => console.log('[PWA] SW error:', e));
   }
@@ -1095,6 +1111,7 @@ if (window.speechSynthesis) {
 }
 renderSeriesList();
 updateDisplay();
+
 </script>
 </body>
 </html>
