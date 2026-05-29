@@ -168,6 +168,10 @@ textarea{resize:vertical;min-height:60px}
           <div class="reps-mini-label">Repeticiones</div>
           <div class="reps-grid" id="reps-grid"></div>
         </div>
+        <div id="ctrl-indicator" style="display:none;align-items:center;gap:8px;font-size:13px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;width:100%;justify-content:center">
+          <div id="mic-dot" style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+          <span id="ctrl-listen-label">Escuchando... di "stop"</span>
+        </div>
         <div class="home-controls">
           <button class="btn" id="pause-btn" onclick="pauseTimer()">&#9646;&#9646; Pausa</button>
           <button class="btn danger" onclick="resetTimer()">&#8634; Reset</button>
@@ -185,6 +189,31 @@ textarea{resize:vertical;min-height:60px}
           <button class="tgl-btn" id="tgl-off" onclick="setAudioMode('off',this)">Sin audio</button>
         </div>
       </div>
+
+      <!-- CONTROL MODE CARD -->
+      <div class="reps-card" style="margin-bottom:10px">
+        <div class="config-label">Modo de control de fases</div>
+        <div class="tgl-group" style="margin-top:8px;width:100%">
+          <button class="tgl-btn active" id="ctrl-manual" onclick="setControlMode('manual',this)" style="flex:1">Manual</button>
+          <button class="tgl-btn" id="ctrl-voice" onclick="setControlMode('voice',this)" style="flex:1">Voz (Stop)</button>
+          <button class="tgl-btn" id="ctrl-shot" onclick="setControlMode('shot',this)" style="flex:1">Disparo</button>
+        </div>
+        <div id="ctrl-status" style="font-size:12px;color:var(--text2);margin-top:8px;display:none">Listo</div>
+        <div id="shot-threshold-row" style="display:none;margin-top:10px">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Sensibilidad al disparo</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:var(--text3)">Baja</span>
+            <input type="range" id="shot-threshold" min="10" max="90" value="40"
+              style="flex:1;accent-color:var(--green)" oninput="updateThreshold(this.value)">
+            <span style="font-size:12px;color:var(--text3)">Alta</span>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">
+            Nivel: <span id="threshold-val">40</span>% &nbsp;|&nbsp; 
+            <span id="mic-level-label">Nivel mic: <span id="mic-level">0</span>%</span>
+          </div>
+        </div>
+      </div>
+
       <div class="config-grid">
         <div class="config-card">
           <div class="config-label">Trabajo</div>
@@ -313,6 +342,7 @@ textarea{resize:vertical;min-height:60px}
   </nav>
 </div>
 <script>
+
 // ============================================================
 // AUDIO
 // ============================================================
@@ -521,6 +551,18 @@ function beginPhase(p, announce) {
   } else {
     updateDisplay(); renderReps(); tick();
   }
+  // Control mode: start/stop listeners based on phase
+  stopVoiceControl();
+  stopShotDetection();
+  var ind = document.getElementById('ctrl-indicator');
+  if (ind) ind.style.display = (running && controlMode !== 'manual') ? 'flex' : 'none';
+  if (running && p === 'work' && controlMode !== 'manual') {
+    if (controlMode === 'voice') {
+      setTimeout(startVoiceControl, 800);
+    } else if (controlMode === 'shot') {
+      setTimeout(startShotDetection, 800);
+    }
+  }
 }
 
 function tick() {
@@ -599,6 +641,9 @@ function startNextExercise() {
 
 function doneTimer() {
   running = false; clearTimeout(mainTimer);
+  stopVoiceControl(); stopShotDetection();
+  var ind = document.getElementById('ctrl-indicator');
+  if (ind) ind.style.display = 'none';
   playDone();
   setPhaseBadge('Sesion completada!', 'done');
   var td = document.getElementById('time-display');
@@ -630,6 +675,7 @@ function resumeTimer() {
 
 function resetTimer() {
   clearTimeout(mainTimer); cancelCD();
+  stopVoiceControl(); stopShotDetection();
   running = false; paused = false; endingCD = false;
   phase = 'work'; curRound = 1; curSeries = 1;
   timeLeft = cfg.work; totalTime = cfg.work; halfNotified = false;
@@ -638,6 +684,8 @@ function resetTimer() {
   setPhaseBadge('Listo', 'idle');
   var glow = document.getElementById('tglow');
   if (glow) glow.className = 'tglow idle';
+  var ind = document.getElementById('ctrl-indicator');
+  if (ind) ind.style.display = 'none';
   updateDisplay(); renderReps();
   showIdleState();
 }
@@ -982,6 +1030,194 @@ function deleteRecord(id) {
 })();
 
 // ============================================================
+// VOICE / SHOT DETECTION CONTROL
+// ============================================================
+var controlMode = 'manual'; // 'manual' | 'voice' | 'shot'
+var recognition = null;
+var audioStream = null;
+var analyserNode = null;
+var shotCheckInterval = null;
+var shotThreshold = 40; // 0-100
+var shotCooldown = false;
+
+function setControlMode(mode, el) {
+  controlMode = mode;
+  document.querySelectorAll('#ctrl-manual,#ctrl-voice,#ctrl-shot').forEach(function(b){
+    b.classList.remove('active');
+  });
+  el.classList.add('active');
+  var thr = document.getElementById('shot-threshold-row');
+  if (thr) thr.style.display = mode === 'shot' ? 'block' : 'none';
+  var st = document.getElementById('ctrl-status');
+  if (st) {
+    if (mode === 'manual') { st.style.display = 'none'; }
+    else {
+      st.style.display = 'block';
+      st.textContent = mode === 'voice' ? 'Di "stop" o "para" para cambiar de fase' : 'Detecta disparo por sonido';
+    }
+  }
+  // Stop any active listeners
+  stopVoiceControl();
+  stopShotDetection();
+}
+
+function updateThreshold(val) {
+  shotThreshold = parseInt(val);
+  var tv = document.getElementById('threshold-val');
+  if (tv) tv.textContent = val;
+}
+
+// ---- VOICE CONTROL (Web Speech Recognition) ----
+function startVoiceControl() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    updateCtrlStatus('Tu navegador no soporta reconocimiento de voz');
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = 'es-ES';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+
+  recognition.onresult = function(e) {
+    var last = e.results[e.results.length - 1];
+    for (var i = 0; i < last.length; i++) {
+      var word = last[i].transcript.trim().toLowerCase();
+      console.log('[Voice]', word);
+      if (/stop|para|ya|fuera|listo/.test(word)) {
+        triggerPhaseChange('voz: ' + word);
+        break;
+      }
+    }
+  };
+
+  recognition.onerror = function(e) {
+    if (e.error === 'no-speech') return; // ignore silence
+    updateCtrlStatus('Error mic: ' + e.error);
+    setTimeout(function(){ if (running && controlMode === 'voice') startVoiceControl(); }, 1500);
+  };
+
+  recognition.onend = function() {
+    // Auto-restart while timer is running in voice mode
+    if (running && !paused && controlMode === 'voice') {
+      setTimeout(function(){ startVoiceControl(); }, 300);
+    }
+  };
+
+  try {
+    recognition.start();
+    updateCtrlStatus('Escuchando... di "stop" para cambiar de fase');
+  } catch(e) {}
+}
+
+function stopVoiceControl() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+}
+
+// ---- SHOT DETECTION (AudioContext analyser) ----
+function startShotDetection() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    updateCtrlStatus('Microfono no disponible');
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio: true, video: false}).then(function(stream) {
+    audioStream = stream;
+    var ctx = getACtx();
+    var source = ctx.createMediaStreamSource(stream);
+    analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = 512;
+    analyserNode.smoothingTimeConstant = 0.3;
+    source.connect(analyserNode);
+
+    var dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+    var baselineSum = 0, baselineCount = 0, baseline = 0;
+    var calibrating = true;
+
+    // Calibrate ambient noise for 1.5s
+    var calTimer = setTimeout(function(){ calibrating = false; }, 1500);
+
+    shotCheckInterval = setInterval(function() {
+      analyserNode.getByteFrequencyData(dataArray);
+      var sum = 0;
+      for (var i = 0; i < dataArray.length; i++) sum += dataArray[i];
+      var avg = sum / dataArray.length;
+      var pct = Math.round((avg / 255) * 100);
+
+      // Update visual mic level
+      var ml = document.getElementById('mic-level');
+      if (ml) ml.textContent = pct;
+      var dot = document.getElementById('mic-dot');
+      if (dot) dot.style.background = pct > shotThreshold ? '#f5a623' : 'var(--green)';
+
+      if (calibrating) {
+        baselineSum += avg; baselineCount++;
+        baseline = baselineSum / baselineCount;
+        updateCtrlStatus('Calibrando ambiente... ' + pct + '%');
+        return;
+      }
+
+      // Trigger if level is 2x baseline AND above threshold AND no cooldown
+      if (!shotCooldown && pct >= shotThreshold && avg > baseline * 2.5) {
+        shotCooldown = true;
+        triggerPhaseChange('disparo detectado');
+        setTimeout(function(){ shotCooldown = false; }, 2000); // 2s cooldown
+      } else if (!shotCooldown) {
+        updateCtrlStatus('Esperando disparo... nivel: ' + pct + '%');
+      }
+    }, 80);
+
+    updateCtrlStatus('Microfono activo - nivel umbral: ' + shotThreshold + '%');
+  }).catch(function(err) {
+    updateCtrlStatus('Sin acceso al microfono: ' + err.message);
+  });
+}
+
+function stopShotDetection() {
+  if (shotCheckInterval) { clearInterval(shotCheckInterval); shotCheckInterval = null; }
+  if (audioStream) {
+    audioStream.getTracks().forEach(function(t){ t.stop(); });
+    audioStream = null;
+  }
+  analyserNode = null;
+  shotCooldown = false;
+}
+
+// ---- TRIGGER phase change from voice/shot ----
+function triggerPhaseChange(reason) {
+  console.log('[Control] Phase change by:', reason);
+  if (!running || paused) return;
+  // Only trigger during WORK phase to advance to REST
+  if (phase !== 'work') return;
+
+  // Cancel current countdown and advance immediately
+  clearTimeout(mainTimer);
+  cancelCD();
+  endingCD = false;
+
+  if (audioMode === 'voice') speak('Stop', true);
+  else if (audioMode === 'beep') beep(1000, 0.15, 'square', 0.5);
+
+  // Small delay then advance
+  setTimeout(function() {
+    timeLeft = 0;
+    advancePhase();
+  }, 200);
+}
+
+function updateCtrlStatus(msg) {
+  var st = document.getElementById('ctrl-status');
+  if (st) st.textContent = msg;
+  var cl = document.getElementById('ctrl-listen-label');
+  if (cl) cl.textContent = msg;
+}
+
+// Control hooks integrated directly into timer functions
+
+// ============================================================
 // INIT
 // ============================================================
 if (window.speechSynthesis) {
@@ -990,6 +1226,7 @@ if (window.speechSynthesis) {
 }
 updateDisplay();
 renderReps();
+
 </script>
 </body>
 </html>
